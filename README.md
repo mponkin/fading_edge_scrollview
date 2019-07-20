@@ -1,6 +1,6 @@
 # fading_edge_scrollview
 
-Package providing FadingEdgeScrollView which allows you to build scroll views with fading edges
+Package providing FadingEdgeScrollView which allows you to build scrollable views with fading edges
 
 ## Usage
 
