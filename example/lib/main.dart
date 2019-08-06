@@ -145,7 +145,7 @@ class CitiesListView extends StatelessWidget {
           ),
           Center(
             child: Container(
-              height: 600,
+              height: 400,
               child: FadingEdgeScrollView.fromScrollView(
                 child: ListView(
                   controller: _scrollController,
