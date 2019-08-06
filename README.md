@@ -16,5 +16,7 @@ See documentation and example folder for more information
 
 ## Demo
 
-![Demo](https://ponkin.dev/fading_edge_scrollview_demo.gif)
-
+[![ListView with images demo](http://img.youtube.com/vi/71pDlfC9pxU/0.jpg)](http://www.youtube.com/watch?v=71pDlfC9pxU "ListView with images demo")
+[![ListView demo](http://img.youtube.com/vi/2kNr3fW0nP8/0.jpg)](http://www.youtube.com/watch?v=2kNr3fW0nP8 "ListView demo")
+[![PageView demo](http://img.youtube.com/vi/6nZhJXVwkvU/0.jpg)](http://www.youtube.com/watch?v=6nZhJXVwkvU "PageView demo")
+[![SingleChildScrollView demo](http://img.youtube.com/vi/0CJKyvr7fT4/0.jpg)](http://www.youtube.com/watch?v=0CJKyvr7fT4 "SingleChildScrollView demo")
