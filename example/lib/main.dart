@@ -30,7 +30,10 @@ class ExamplesList extends StatelessWidget {
           children: <Widget>[
             NavigatorButton(text: "ListView", builder: (_) => ListViewScreen()),
             NavigatorButton(text: "PageView", builder: (_) => PageViewScreen()),
-            NavigatorButton(text: "Long text", builder: (_) => LongTextScreen())
+            NavigatorButton(
+                text: "Long text", builder: (_) => LongTextScreen()),
+            NavigatorButton(
+                text: "Cities images", builder: (_) => CitiesListView()),
           ],
         ),
       ),
@@ -122,6 +125,49 @@ class LongTextScreen extends StatelessWidget {
           controller: controller,
           child: Padding(padding: EdgeInsets.all(5), child: Text(lipsumText)),
         ),
+      ),
+    );
+  }
+}
+
+class CitiesListView extends StatelessWidget {
+  final _scrollController = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          Image.asset(
+            "assets/world.jpeg",
+            fit: BoxFit.fitHeight,
+            height: MediaQuery.of(context).size.height,
+          ),
+          Center(
+            child: Container(
+              height: 600,
+              child: FadingEdgeScrollView.fromScrollView(
+                child: ListView(
+                  controller: _scrollController,
+                  children: [
+                    "paris",
+                    "rome",
+                    "moscow",
+                    "tokyo",
+                  ]
+                      .map((city) => Padding(
+                            padding: EdgeInsets.all(12),
+                            child: ClipRRect(
+                              borderRadius: new BorderRadius.circular(20.0),
+                              child: Image.asset("assets/$city.jpeg"),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
