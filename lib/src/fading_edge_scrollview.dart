@@ -155,7 +155,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isScrolledToStart == null) {
+    if (_isScrolledToStart == null && _controller.hasClients) {
       final offset = _controller.offset;
       final minOffset = _controller.position.minScrollExtent;
       final maxOffset = _controller.position.maxScrollExtent;
@@ -174,8 +174,8 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
           1,
         ],
         colors: _getColors(
-            widget.gradientFractionOnStart > 0 && !_isScrolledToStart,
-            widget.gradientFractionOnEnd > 0 && !_isScrolledToEnd),
+            widget.gradientFractionOnStart > 0 && !(_isScrolledToStart ?? true),
+            widget.gradientFractionOnEnd > 0 && !(_isScrolledToEnd ?? false)),
       ).createShader(bounds.shift(Offset(-bounds.left, -bounds.top))),
       child: widget.child,
       blendMode: BlendMode.dstIn,
