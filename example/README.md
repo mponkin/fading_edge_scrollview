@@ -2,6 +2,8 @@
 
 Example for FadingEdgeScrollView
 
+City images used in example are free to use and were found at [Pexels](https://www.pexels.com)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
