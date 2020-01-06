@@ -111,6 +111,27 @@ class FadingEdgeScrollView extends StatefulWidget {
     );
   }
 
+  /// Constructor for creating [FadingEdgeScrollView] with [AnimatedList] as child
+  /// child must have [AnimatedList.controller] set
+  factory FadingEdgeScrollView.fromAnimatedList({
+    Key key,
+    @required AnimatedList child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
+    assert(child.controller != null, "Child must have controller set");
+
+    return FadingEdgeScrollView._internal(
+      key: key,
+      child: child,
+      scrollController: child.controller,
+      scrollDirection: child.scrollDirection,
+      reverse: child.reverse,
+      gradientFractionOnStart: gradientFractionOnStart,
+      gradientFractionOnEnd: gradientFractionOnEnd,
+    );
+  }
+
   @override
   _FadingEdgeScrollViewState createState() => _FadingEdgeScrollViewState();
 }
