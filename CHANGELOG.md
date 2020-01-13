@@ -1,3 +1,7 @@
+## [1.1.0] - 13.0.2020.
+
+* Added support for AnimatedList (thanks to davidmartos96)
+
 ## [1.0.2] - 06.08.2019.
 
 * documentation fixes
