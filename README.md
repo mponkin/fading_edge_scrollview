@@ -10,7 +10,7 @@ Unfortunately scrollable view don't share same interface so there are separate c
 * SingleChildScrollView `FadingEdgeScrollView.fromSingleChildScrollView`
 * PageView`FadingEdgeScrollView.fromPageView`
 
-View passed as child **MUST** have `controller` set
+View passed as child **MUST** have `controller` set. If you want this controller to be disposed when FadingEdgeScrollView is disposed you can pass `shouldDisposeScrollController` flag set as true to widget constructor.
 
 See documentation and example folder for more information
 
