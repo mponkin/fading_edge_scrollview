@@ -32,6 +32,9 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// 1 means gradients on start half of widget fully covers it
   final double gradientFractionOnEnd;
 
+  /// set to true if you want scrollController passed to widget to be disposed when widget's state is disposed
+  final bool shouldDisposeScrollController;
+
   const FadingEdgeScrollView._internal({
     Key key,
     @required this.child,
@@ -40,6 +43,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     @required this.scrollDirection,
     @required this.gradientFractionOnStart,
     @required this.gradientFractionOnEnd,
+    @required this.shouldDisposeScrollController,
   })  : assert(child != null),
         assert(scrollController != null),
         assert(reverse != null),
@@ -78,6 +82,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     @required ScrollView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
+    bool shouldDisposeScrollController = false,
   }) {
     assert(child.controller != null, "Child must have controller set");
 
@@ -89,6 +94,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      shouldDisposeScrollController: shouldDisposeScrollController,
     );
   }
 
@@ -99,6 +105,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     @required SingleChildScrollView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
+    bool shouldDisposeScrollController = false,
   }) {
     assert(child.controller != null, "Child must have controller set");
 
@@ -110,6 +117,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      shouldDisposeScrollController: shouldDisposeScrollController,
     );
   }
 
@@ -120,6 +128,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     @required PageView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
+    bool shouldDisposeScrollController = false,
   }) {
     assert(child.controller != null, "Child must have controller set");
 
@@ -131,6 +140,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      shouldDisposeScrollController: shouldDisposeScrollController,
     );
   }
 
@@ -141,6 +151,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     @required AnimatedList child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
+    bool shouldDisposeScrollController = false,
   }) {
     assert(child.controller != null, "Child must have controller set");
 
@@ -152,6 +163,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      shouldDisposeScrollController: shouldDisposeScrollController,
     );
   }
 
@@ -176,7 +188,9 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
   void dispose() {
     super.dispose();
     _controller.removeListener(_onScroll);
-    _controller.dispose();
+    if (widget.shouldDisposeScrollController) {
+      _controller.dispose();
+    }
     _controller = null;
   }
 
