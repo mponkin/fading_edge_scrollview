@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Flutter widget for displaying fading edge at start/end of scroll views
@@ -171,21 +172,32 @@ class FadingEdgeScrollView extends StatefulWidget {
   _FadingEdgeScrollViewState createState() => _FadingEdgeScrollViewState();
 }
 
-class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
+class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with WidgetsBindingObserver {
   ScrollController _controller;
   bool _isScrolledToStart;
-  bool _isScrolledToEnd = false;
+  bool _isScrolledToEnd;
 
   @override
   void initState() {
     super.initState();
+
     _controller = widget.scrollController;
     _isScrolledToStart = _controller.initialScrollOffset == 0;
     _controller.addListener(_onScroll);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isScrolledToEnd == null && _controller.position.maxScrollExtent == 0) {
+        setState(() {
+          _isScrolledToEnd = true;
+        });
+      }
+    });
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     _controller.removeListener(_onScroll);
     if (widget.shouldDisposeScrollController) {
@@ -202,13 +214,41 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
     final isScrolledToEnd = offset >= maxOffset;
     final isScrolledToStart = offset <= minOffset;
 
-    if (isScrolledToEnd != _isScrolledToEnd ||
-        isScrolledToStart != _isScrolledToStart) {
+    if (isScrolledToEnd != _isScrolledToEnd || isScrolledToStart != _isScrolledToStart) {
       setState(() {
         _isScrolledToEnd = isScrolledToEnd;
         _isScrolledToStart = isScrolledToStart;
       });
     }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    setState(() {
+      // Add the shading or remove it when the screen resize (web/desktop) or mobile is rotated
+      if (_controller.hasClients) {
+        final offset = _controller.offset;
+        final maxOffset = _controller.position.maxScrollExtent;
+        if (maxOffset == 0 && offset == 0) {
+          // Not scrollable
+          _isScrolledToStart = true;
+          _isScrolledToEnd = true;
+        } else if (maxOffset == offset) {
+          // Scrollable but at end
+          _isScrolledToStart = false;
+          _isScrolledToEnd = true;
+        } else if (maxOffset > 0 && offset == 0) {
+          // Scrollable but at start
+          _isScrolledToStart = true;
+          _isScrolledToEnd = false;
+        } else {
+          // Scroll in progress/not are either end
+          _isScrolledToStart = false;
+          _isScrolledToEnd = false;
+        }
+      }
+    });
   }
 
   @override
@@ -221,6 +261,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
       _isScrolledToEnd = offset >= maxOffset;
       _isScrolledToStart = offset <= minOffset;
     }
+
     return ShaderMask(
       shaderCallback: (bounds) => LinearGradient(
         begin: _gradientStart,
@@ -231,8 +272,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
           1 - widget.gradientFractionOnEnd * 0.5,
           1,
         ],
-        colors: _getColors(
-            widget.gradientFractionOnStart > 0 && !(_isScrolledToStart ?? true),
+        colors: _getColors(widget.gradientFractionOnStart > 0 && !(_isScrolledToStart ?? true),
             widget.gradientFractionOnEnd > 0 && !(_isScrolledToEnd ?? false)),
       ).createShader(bounds.shift(Offset(-bounds.left, -bounds.top))),
       child: widget.child,
@@ -240,24 +280,17 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> {
     );
   }
 
-  Alignment get _gradientStart => widget.scrollDirection == Axis.vertical
-      ? _verticalStart
-      : _horizontalStart;
+  Alignment get _gradientStart => widget.scrollDirection == Axis.vertical ? _verticalStart : _horizontalStart;
 
-  Alignment get _gradientEnd =>
-      widget.scrollDirection == Axis.vertical ? _verticalEnd : _horizontalEnd;
+  Alignment get _gradientEnd => widget.scrollDirection == Axis.vertical ? _verticalEnd : _horizontalEnd;
 
-  Alignment get _verticalStart =>
-      widget.reverse ? Alignment.bottomCenter : Alignment.topCenter;
+  Alignment get _verticalStart => widget.reverse ? Alignment.bottomCenter : Alignment.topCenter;
 
-  Alignment get _verticalEnd =>
-      widget.reverse ? Alignment.topCenter : Alignment.bottomCenter;
+  Alignment get _verticalEnd => widget.reverse ? Alignment.topCenter : Alignment.bottomCenter;
 
-  Alignment get _horizontalStart =>
-      widget.reverse ? Alignment.centerRight : Alignment.centerLeft;
+  Alignment get _horizontalStart => widget.reverse ? Alignment.centerRight : Alignment.centerLeft;
 
-  Alignment get _horizontalEnd =>
-      widget.reverse ? Alignment.centerLeft : Alignment.centerRight;
+  Alignment get _horizontalEnd => widget.reverse ? Alignment.centerLeft : Alignment.centerRight;
 
   List<Color> _getColors(bool isStartEnabled, bool isEndEnabled) => [
         (isStartEnabled ? Colors.transparent : Colors.white),
