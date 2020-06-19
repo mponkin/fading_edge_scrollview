@@ -22,19 +22,32 @@ class ExamplesList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("FadingEdgeScrollView examples"),
+        title: Text('FadingEdgeScrollView examples'),
       ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            NavigatorButton(text: "ListView", builder: (_) => ListViewScreen()),
-            NavigatorButton(text: "PageView", builder: (_) => PageViewScreen()),
-            NavigatorButton(text: "ListWheelScrollView", builder: (_) => ListWheelScrollViewScreen()),
             NavigatorButton(
-                text: "Long text", builder: (_) => LongTextScreen()),
+              text: 'ListView',
+              builder: (_) => ListViewScreen(),
+            ),
             NavigatorButton(
-                text: "Cities images", builder: (_) => CitiesListView()),
+              text: 'PageView (LTR)',
+              builder: (_) => PageViewScreen(textDirection: TextDirection.ltr),
+            ),
+            NavigatorButton(
+              text: 'PageView (RTL)',
+              builder: (_) => PageViewScreen(textDirection: TextDirection.rtl),
+            ),
+            NavigatorButton(
+              text: 'Long text',
+              builder: (_) => LongTextScreen(),
+            ),
+            NavigatorButton(
+              text: 'Cities images',
+              builder: (_) => CitiesListView(),
+            ),
           ],
         ),
       ),
@@ -69,7 +82,7 @@ class ListViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Example with ListView"),
+        title: Text('Example with ListView'),
       ),
       body: Container(
         color: Colors.greenAccent,
@@ -77,10 +90,10 @@ class ListViewScreen extends StatelessWidget {
           child: ListView.builder(
             controller: _controller,
             itemBuilder: (context, index) => ListTile(
-                title: Text("Item #$index"),
+                title: Text('Item #$index'),
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(
-                      "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
+                      'https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg'),
                 )),
             itemCount: 30,
           ),
@@ -90,57 +103,35 @@ class ListViewScreen extends StatelessWidget {
   }
 }
 
+class PageViewScreen extends StatelessWidget {
+  final TextDirection textDirection;
 
-class ListWheelScrollViewScreen extends StatelessWidget {
-  final _controller = ScrollController();
+  const PageViewScreen({
+    @required this.textDirection,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Example with ListWheelScrollView"),
+        title: Text('Example with PageView'),
       ),
-      body: Container(
-        color: Colors.greenAccent,
-        child: FadingEdgeScrollView.fromListWheelScrollView(
-          gradientFractionOnStart: 0.3,
-          gradientFractionOnEnd: 0.3,
-          child: ListWheelScrollView(
-            itemExtent: 60,
-            perspective: 0.0001,
-            controller: _controller,
-            children: lipsumText.split(" ").sublist(0,20).map((e) {
-              return ListTile(
-                  title: Text("Item #$e"),
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
-                  ));
-            }).toList(),
+      body: Directionality(
+        textDirection: textDirection,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: FadingEdgeScrollView.fromPageView(
+            child: PageView(
+              children: <Widget>[
+                Card(color: Colors.red),
+                Card(color: Colors.green),
+                Card(color: Colors.blue),
+              ],
+            ),
+            gradientFractionOnStart: 0.1,
+            gradientFractionOnEnd: 0.1,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class PageViewScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Example with PageView"),
-      ),
-      body: FadingEdgeScrollView.fromPageView(
-        child: PageView(
-          children: <Widget>[
-            Card(color: Colors.red),
-            Card(color: Colors.green),
-            Card(color: Colors.blue),
-          ],
-        ),
-        gradientFractionOnStart: 0.05,
-        gradientFractionOnEnd: 0.05,
       ),
     );
   }
@@ -153,7 +144,7 @@ class LongTextScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Example with long text"),
+        title: Text('Example with long text'),
       ),
       body: FadingEdgeScrollView.fromSingleChildScrollView(
         child: SingleChildScrollView(
@@ -174,7 +165,7 @@ class CitiesListView extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           Image.asset(
-            "assets/world.jpeg",
+            'assets/world.jpeg',
             fit: BoxFit.fitHeight,
             height: MediaQuery.of(context).size.height,
           ),
@@ -185,16 +176,16 @@ class CitiesListView extends StatelessWidget {
                 child: ListView(
                   controller: _scrollController,
                   children: [
-                    "paris",
-                    "rome",
-                    "moscow",
-                    "tokyo",
+                    'paris',
+                    'rome',
+                    'moscow',
+                    'tokyo',
                   ]
                       .map((city) => Padding(
                             padding: EdgeInsets.all(12),
                             child: ClipRRect(
                               borderRadius: new BorderRadius.circular(20.0),
-                              child: Image.asset("assets/$city.jpeg"),
+                              child: Image.asset('assets/$city.jpeg'),
                             ),
                           ))
                       .toList(),
