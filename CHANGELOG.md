@@ -1,3 +1,7 @@
+## [1.1.4] - 29.06.2020.
+
+* Fixed bug which happened when view is disposed earlier than PostFrameCallback happened
+
 ## [1.1.3] - 19.06.2020.
 
 * Added support for right to left text direction
