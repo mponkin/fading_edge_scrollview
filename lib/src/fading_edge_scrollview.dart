@@ -187,6 +187,10 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     _controller.addListener(_onScroll);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller == null) {
+        return;
+      }
+
       if (_isScrolledToEnd == null &&
           _controller.position.maxScrollExtent == 0) {
         setState(() {
