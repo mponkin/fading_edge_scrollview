@@ -9,6 +9,7 @@ Unfortunately scrollable view don't share same interface so there are separate c
 * ScrollView (most scrollable views inherit from this class) `FadingEdgeScrollView.fromScrollView`
 * SingleChildScrollView `FadingEdgeScrollView.fromSingleChildScrollView`
 * PageView`FadingEdgeScrollView.fromPageView`
+* fromListWheelScrollView`FadingEdgeScrollView.fromListWheelScrollView`
 
 View passed as child **MUST** have `controller` set
 

@@ -48,6 +48,29 @@ class FadingEdgeScrollView extends StatefulWidget {
         assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
         super(key: key);
 
+
+  /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
+  /// child must have [ScrollView.controller] set
+  factory FadingEdgeScrollView.fromListWheelScrollView({
+    Key key,
+    @required ListWheelScrollView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
+    assert(child.controller != null, "Child must have controller set");
+
+    return FadingEdgeScrollView._internal(
+      key: key,
+      child: child,
+      scrollController: child.controller,
+      scrollDirection: Axis.vertical,
+      reverse: false,
+      gradientFractionOnStart: gradientFractionOnStart,
+      gradientFractionOnEnd: gradientFractionOnEnd,
+    );
+  }
+
+
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
   factory FadingEdgeScrollView.fromScrollView({

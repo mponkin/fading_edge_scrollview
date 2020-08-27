@@ -2,6 +2,8 @@ import 'package:example/lipsum.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
+import 'lipsum.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -68,20 +70,25 @@ class ListViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Example with ListView"),
+        title: Text("Example with ListWheelScrollView"),
       ),
       body: Container(
         color: Colors.greenAccent,
-        child: FadingEdgeScrollView.fromScrollView(
-          child: ListView.builder(
+        child: FadingEdgeScrollView.fromListWheelScrollView(
+          gradientFractionOnStart: 0.3,
+          gradientFractionOnEnd: 0.3,
+          child: ListWheelScrollView(
+            itemExtent: 60,
+            perspective: 0.0001,
             controller: _controller,
-            itemBuilder: (context, index) => ListTile(
-                title: Text("Item #$index"),
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
-                )),
-            itemCount: 30,
+            children: lipsumText.split(" ").sublist(0,20).map((e) {
+              return ListTile(
+                  title: Text("Item #$e"),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
+                  ));
+            }).toList(),
           ),
         ),
       ),
