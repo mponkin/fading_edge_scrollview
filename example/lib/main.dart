@@ -2,6 +2,8 @@ import 'package:example/lipsum.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
+import 'lipsum.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -36,6 +38,7 @@ class ExamplesList extends StatelessWidget {
               text: 'PageView (LTR)',
               builder: (_) => PageViewScreen(textDirection: TextDirection.ltr),
             ),
+            NavigatorButton(text: "ListWheelScrollView", builder: (_) => ListWheelScrollViewScreen()),
             NavigatorButton(
               text: 'PageView (RTL)',
               builder: (_) => PageViewScreen(textDirection: TextDirection.rtl),
@@ -82,7 +85,7 @@ class ListViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example with ListView'),
+        title: Text("Example with ListView"),
       ),
       body: Container(
         color: Colors.greenAccent,
@@ -90,12 +93,46 @@ class ListViewScreen extends StatelessWidget {
           child: ListView.builder(
             controller: _controller,
             itemBuilder: (context, index) => ListTile(
-                title: Text('Item #$index'),
+                title: Text("Item #$index"),
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(
-                      'https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg'),
+                      "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
                 )),
             itemCount: 30,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class ListWheelScrollViewScreen extends StatelessWidget {
+  final _controller = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Example with ListWheelScrollView"),
+      ),
+      body: Container(
+        color: Colors.greenAccent,
+        child: FadingEdgeScrollView.fromListWheelScrollView(
+          gradientFractionOnStart: 0.3,
+          gradientFractionOnEnd: 0.3,
+          child: ListWheelScrollView(
+            itemExtent: 60,
+            perspective: 0.0001,
+            controller: _controller,
+            children: lipsumText.split(" ").sublist(0,20).map((e) {
+              return ListTile(
+                  title: Text("Item #$e"),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
+                  ));
+            }).toList(),
           ),
         ),
       ),
