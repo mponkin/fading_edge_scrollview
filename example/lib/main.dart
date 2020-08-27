@@ -2,8 +2,6 @@ import 'package:example/lipsum.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
-import 'lipsum.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -32,6 +30,7 @@ class ExamplesList extends StatelessWidget {
           children: <Widget>[
             NavigatorButton(text: "ListView", builder: (_) => ListViewScreen()),
             NavigatorButton(text: "PageView", builder: (_) => PageViewScreen()),
+            NavigatorButton(text: "ListWheelScrollView", builder: (_) => ListWheelScrollViewScreen()),
             NavigatorButton(
                 text: "Long text", builder: (_) => LongTextScreen()),
             NavigatorButton(
@@ -64,6 +63,35 @@ class NavigatorButton extends StatelessWidget {
 }
 
 class ListViewScreen extends StatelessWidget {
+  final _controller = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Example with ListView"),
+      ),
+      body: Container(
+        color: Colors.greenAccent,
+        child: FadingEdgeScrollView.fromScrollView(
+          child: ListView.builder(
+            controller: _controller,
+            itemBuilder: (context, index) => ListTile(
+                title: Text("Item #$index"),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
+                )),
+            itemCount: 30,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class ListWheelScrollViewScreen extends StatelessWidget {
   final _controller = ScrollController();
 
   @override
