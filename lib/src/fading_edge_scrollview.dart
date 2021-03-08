@@ -37,27 +37,23 @@ class FadingEdgeScrollView extends StatefulWidget {
   final bool shouldDisposeScrollController;
 
   const FadingEdgeScrollView._internal({
-    Key key,
-    @required this.child,
-    @required this.scrollController,
-    @required this.reverse,
-    @required this.scrollDirection,
-    @required this.gradientFractionOnStart,
-    @required this.gradientFractionOnEnd,
-    @required this.shouldDisposeScrollController,
-  })  : assert(child != null),
-        assert(scrollController != null),
-        assert(reverse != null),
-        assert(scrollDirection != null),
-        assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
+    Key? key,
+    required this.child,
+    required this.scrollController,
+    required this.reverse,
+    required this.scrollDirection,
+    required this.gradientFractionOnStart,
+    required this.gradientFractionOnEnd,
+    required this.shouldDisposeScrollController,
+  })  : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
         assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
         super(key: key);
 
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
   factory FadingEdgeScrollView.fromScrollView({
-    Key key,
-    @required ScrollView child,
+    Key? key,
+    required ScrollView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
@@ -67,7 +63,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller,
+      scrollController: child.controller!,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
@@ -79,8 +75,8 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// Constructor for creating [FadingEdgeScrollView] with [SingleChildScrollView] as child
   /// child must have [SingleChildScrollView.controller] set
   factory FadingEdgeScrollView.fromSingleChildScrollView({
-    Key key,
-    @required SingleChildScrollView child,
+    Key? key,
+    required SingleChildScrollView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
@@ -90,7 +86,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller,
+      scrollController: child.controller!,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
@@ -102,13 +98,12 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// Constructor for creating [FadingEdgeScrollView] with [PageView] as child
   /// child must have [PageView.controller] set
   factory FadingEdgeScrollView.fromPageView({
-    Key key,
-    @required PageView child,
+    Key? key,
+    required PageView child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
   }) {
-    assert(child.controller != null, "Child must have controller set");
 
     return FadingEdgeScrollView._internal(
       key: key,
@@ -125,8 +120,8 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// Constructor for creating [FadingEdgeScrollView] with [AnimatedList] as child
   /// child must have [AnimatedList.controller] set
   factory FadingEdgeScrollView.fromAnimatedList({
-    Key key,
-    @required AnimatedList child,
+    Key? key,
+    required AnimatedList child,
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
@@ -136,7 +131,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller,
+      scrollController: child.controller!,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
@@ -151,9 +146,9 @@ class FadingEdgeScrollView extends StatefulWidget {
 
 class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
-  ScrollController _controller;
-  bool _isScrolledToStart;
-  bool _isScrolledToEnd;
+  late ScrollController _controller;
+  bool? _isScrolledToStart;
+  bool? _isScrolledToEnd;
 
   @override
   void initState() {
@@ -163,30 +158,33 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     _isScrolledToStart = _controller.initialScrollOffset == 0;
     _controller.addListener(_onScroll);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_controller == null) {
-        return;
-      }
-
-      if (_isScrolledToEnd == null &&
-          _controller.position.maxScrollExtent == 0) {
-        setState(() {
-          _isScrolledToEnd = true;
-        });
-      }
+    WidgetsBinding.instance?.let((it) {
+      it.addPostFrameCallback(_postFrameCallback);
+      it.addObserver(this);
     });
-    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _postFrameCallback(Duration _) {
+    if (!mounted) {
+      return;
+    }
+
+    if (_isScrolledToEnd == null &&
+        _controller.position.maxScrollExtent == 0) {
+      setState(() {
+        _isScrolledToEnd = true;
+      });
+    }
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
     _controller.removeListener(_onScroll);
     if (widget.shouldDisposeScrollController) {
       _controller.dispose();
     }
-    _controller = null;
   }
 
   void _onScroll() {
@@ -297,3 +295,8 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
         (isEndEnabled ? Colors.transparent : Colors.white)
       ];
 }
+
+extension _Let<T> on T {
+  U let<U>(U Function(T) block) => block(this);
+}
+
