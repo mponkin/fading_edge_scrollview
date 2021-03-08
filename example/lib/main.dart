@@ -60,8 +60,8 @@ class NavigatorButton extends StatelessWidget {
   final WidgetBuilder builder;
 
   NavigatorButton({
-    @required this.text,
-    @required this.builder,
+    required this.text,
+    required this.builder,
   });
 
   @override
@@ -107,7 +107,7 @@ class PageViewScreen extends StatelessWidget {
   final TextDirection textDirection;
 
   const PageViewScreen({
-    @required this.textDirection,
+    required this.textDirection,
   });
 
   @override
