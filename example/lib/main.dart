@@ -24,32 +24,33 @@ class ExamplesList extends StatelessWidget {
       appBar: AppBar(
         title: Text('FadingEdgeScrollView examples'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            NavigatorButton(
-              text: 'ListView',
-              builder: (_) => ListViewScreen(),
-            ),
-            NavigatorButton(
-              text: 'PageView (LTR)',
-              builder: (_) => PageViewScreen(textDirection: TextDirection.ltr),
-            ),
-            NavigatorButton(
-              text: 'PageView (RTL)',
-              builder: (_) => PageViewScreen(textDirection: TextDirection.rtl),
-            ),
-            NavigatorButton(
-              text: 'Long text',
-              builder: (_) => LongTextScreen(),
-            ),
-            NavigatorButton(
-              text: 'Cities images',
-              builder: (_) => CitiesListView(),
-            ),
-          ],
-        ),
+      body: ListView(
+        children: <Widget>[
+          NavigatorButton(
+            text: 'ListView',
+            builder: (_) => ListViewScreen(),
+          ),
+          NavigatorButton(
+            text: 'PageView (LTR)',
+            builder: (_) => PageViewScreen(textDirection: TextDirection.ltr),
+          ),
+          NavigatorButton(
+            text: 'PageView (RTL)',
+            builder: (_) => PageViewScreen(textDirection: TextDirection.rtl),
+          ),
+          NavigatorButton(
+            text: 'Long text',
+            builder: (_) => LongTextScreen(),
+          ),
+          NavigatorButton(
+            text: 'Cities images',
+            builder: (_) => CitiesListView(),
+          ),
+          NavigatorButton(
+            text: "ListWheelScrollView",
+            builder: (_) => ListWheelScrollViewScreen(),
+          ),
+        ],
       ),
     );
   }
@@ -60,15 +61,15 @@ class NavigatorButton extends StatelessWidget {
   final WidgetBuilder builder;
 
   NavigatorButton({
-    @required this.text,
-    @required this.builder,
+    required this.text,
+    required this.builder,
   });
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      child: Text(text),
-      onPressed: () {
+    return ListTile(
+      title: Text(text),
+      onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: builder));
       },
     );
@@ -107,7 +108,7 @@ class PageViewScreen extends StatelessWidget {
   final TextDirection textDirection;
 
   const PageViewScreen({
-    @required this.textDirection,
+    required this.textDirection,
   });
 
   @override
@@ -162,6 +163,9 @@ class CitiesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Example with cities images'),
+      ),
       body: Stack(
         children: <Widget>[
           Image.asset(
@@ -194,6 +198,39 @@ class CitiesListView extends StatelessWidget {
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class ListWheelScrollViewScreen extends StatelessWidget {
+  final _controller = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Example with ListWheelScrollView"),
+      ),
+      body: Container(
+        color: Colors.greenAccent,
+        child: FadingEdgeScrollView.fromListWheelScrollView(
+          gradientFractionOnStart: 0.3,
+          gradientFractionOnEnd: 0.3,
+          child: ListWheelScrollView(
+            itemExtent: 60,
+            perspective: 0.0001,
+            controller: _controller,
+            children: lipsumText.split(" ").sublist(0, 20).map((e) {
+              return ListTile(
+                  title: Text("Item #$e"),
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
+                  ));
+            }).toList(),
+          ),
+        ),
       ),
     );
   }

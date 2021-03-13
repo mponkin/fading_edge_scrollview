@@ -1,3 +1,8 @@
+## [2.0.0] - 13.03.2021.
+
+* Added support for null-safety
+* Added option to use ListWheelScrollView as a child (thanks to moda20)
+
 ## [1.1.4] - 29.06.2020.
 
 * Fixed bug which happened when view is disposed earlier than PostFrameCallback happened
