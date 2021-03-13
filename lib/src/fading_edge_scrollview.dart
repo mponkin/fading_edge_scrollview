@@ -45,7 +45,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     required this.gradientFractionOnStart,
     required this.gradientFractionOnEnd,
     required this.shouldDisposeScrollController,
-  })  : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
+  })   : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
         assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
         super(key: key);
 
@@ -59,7 +59,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     bool shouldDisposeScrollController = false,
   }) {
     final controller = child.controller;
-    if(controller == null) {
+    if (controller == null) {
       throw Exception("Child must have controller set");
     }
 
@@ -85,7 +85,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     bool shouldDisposeScrollController = false,
   }) {
     final controller = child.controller;
-    if(controller == null) {
+    if (controller == null) {
       throw Exception("Child must have controller set");
     }
 
@@ -110,7 +110,6 @@ class FadingEdgeScrollView extends StatefulWidget {
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
   }) {
-
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
@@ -133,7 +132,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     bool shouldDisposeScrollController = false,
   }) {
     final controller = child.controller;
-    if(controller == null) {
+    if (controller == null) {
       throw Exception("Child must have controller set");
     }
 
@@ -143,6 +142,32 @@ class FadingEdgeScrollView extends StatefulWidget {
       scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
+      gradientFractionOnStart: gradientFractionOnStart,
+      gradientFractionOnEnd: gradientFractionOnEnd,
+      shouldDisposeScrollController: shouldDisposeScrollController,
+    );
+  }
+
+  /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
+  /// child must have [ScrollView.controller] set
+  factory FadingEdgeScrollView.fromListWheelScrollView({
+    Key? key,
+    required ListWheelScrollView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+    bool shouldDisposeScrollController = false,
+  }) {
+    final controller = child.controller;
+    if (controller == null) {
+      throw Exception("Child must have controller set");
+    }
+
+    return FadingEdgeScrollView._internal(
+      key: key,
+      child: child,
+      scrollController: controller,
+      scrollDirection: Axis.vertical,
+      reverse: false,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
@@ -178,8 +203,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       return;
     }
 
-    if (_isScrolledToEnd == null &&
-        _controller.position.maxScrollExtent == 0) {
+    if (_isScrolledToEnd == null && _controller.position.maxScrollExtent == 0) {
       setState(() {
         _isScrolledToEnd = true;
       });
@@ -308,4 +332,3 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
 extension _Let<T> on T {
   U let<U>(U Function(T) block) => block(this);
 }
-
