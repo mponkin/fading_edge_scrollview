@@ -163,6 +163,9 @@ class CitiesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Example with cities images'),
+      ),
       body: Stack(
         children: <Widget>[
           Image.asset(
