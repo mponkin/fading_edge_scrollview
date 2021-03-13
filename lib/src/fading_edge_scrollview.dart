@@ -58,12 +58,15 @@ class FadingEdgeScrollView extends StatefulWidget {
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
   }) {
-    assert(child.controller != null, "Child must have controller set");
+    final controller = child.controller;
+    if(controller == null) {
+      throw Exception("Child must have controller set");
+    }
 
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller!,
+      scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
@@ -81,12 +84,15 @@ class FadingEdgeScrollView extends StatefulWidget {
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
   }) {
-    assert(child.controller != null, "Child must have controller set");
+    final controller = child.controller;
+    if(controller == null) {
+      throw Exception("Child must have controller set");
+    }
 
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller!,
+      scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
@@ -126,12 +132,15 @@ class FadingEdgeScrollView extends StatefulWidget {
     double gradientFractionOnEnd = 0.1,
     bool shouldDisposeScrollController = false,
   }) {
-    assert(child.controller != null, "Child must have controller set");
+    final controller = child.controller;
+    if(controller == null) {
+      throw Exception("Child must have controller set");
+    }
 
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
-      scrollController: child.controller!,
+      scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
