@@ -9,16 +9,17 @@ Unfortunately scrollable view don't share same interface so there are separate c
 * ScrollView (most scrollable views inherit from this class) `FadingEdgeScrollView.fromScrollView`
 * SingleChildScrollView `FadingEdgeScrollView.fromSingleChildScrollView`
 * PageView`FadingEdgeScrollView.fromPageView`
+* AnimatedList`FadingEdgeScrollView.fromAnimatedList`
+* ListWheelScrollView`FadingEdgeScrollView.fromListWheelScrollView`
 
 View passed as child **MUST** have `controller` set. If you want this controller to be disposed when FadingEdgeScrollView is disposed you can pass `shouldDisposeScrollController` flag set as true to widget constructor.
 
 See documentation and example folder for more information
 
-## Flutter web support
+## Flutter web support problems
 
-Unfortunately this lib does not work in flutter web. 
-It does not have any platform related code, however it uses `ShaderMask` widget which is not support for Flutter web yet.
-You can get more info about the problem on [this page](https://github.com/flutter/flutter/issues/44152)
+Unfortunately this lib has problems working with flutter web. It does not have any platform related code, however it uses `ShaderMask`. `ShaderMask` support for web was recently added to flutter dev channel, and it works not as well as I expect it to.
+I will get back to this question when `ShaderMask` for web will work in stable channel.
 
 ## Demo
 
