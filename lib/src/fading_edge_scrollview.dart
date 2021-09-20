@@ -45,7 +45,7 @@ class FadingEdgeScrollView extends StatefulWidget {
     required this.gradientFractionOnStart,
     required this.gradientFractionOnEnd,
     required this.shouldDisposeScrollController,
-  })   : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
+  })  : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
         assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
         super(key: key);
 
@@ -198,12 +198,17 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     });
   }
 
+  bool get _controllerIsReady =>
+      _controller.hasClients && _controller.position.hasContentDimensions;
+
   void _postFrameCallback(Duration _) {
     if (!mounted) {
       return;
     }
 
-    if (_isScrolledToEnd == null && _controller.position.maxScrollExtent == 0) {
+    if (_isScrolledToEnd == null &&
+        _controllerIsReady &&
+        _controller.position.maxScrollExtent == 0) {
       setState(() {
         _isScrolledToEnd = true;
       });
@@ -221,6 +226,9 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
   }
 
   void _onScroll() {
+    if (!_controllerIsReady) {
+      return;
+    }
     final offset = _controller.offset;
     final minOffset = _controller.position.minScrollExtent;
     final maxOffset = _controller.position.maxScrollExtent;
@@ -242,33 +250,34 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     super.didChangeMetrics();
     setState(() {
       // Add the shading or remove it when the screen resize (web/desktop) or mobile is rotated
-      if (_controller.hasClients) {
-        final offset = _controller.offset;
-        final maxOffset = _controller.position.maxScrollExtent;
-        if (maxOffset == 0 && offset == 0) {
-          // Not scrollable
-          _isScrolledToStart = true;
-          _isScrolledToEnd = true;
-        } else if (maxOffset == offset) {
-          // Scrollable but at end
-          _isScrolledToStart = false;
-          _isScrolledToEnd = true;
-        } else if (maxOffset > 0 && offset == 0) {
-          // Scrollable but at start
-          _isScrolledToStart = true;
-          _isScrolledToEnd = false;
-        } else {
-          // Scroll in progress/not are either end
-          _isScrolledToStart = false;
-          _isScrolledToEnd = false;
-        }
+      if (!_controllerIsReady) {
+        return;
+      }
+      final offset = _controller.offset;
+      final maxOffset = _controller.position.maxScrollExtent;
+      if (maxOffset == 0 && offset == 0) {
+        // Not scrollable
+        _isScrolledToStart = true;
+        _isScrolledToEnd = true;
+      } else if (maxOffset == offset) {
+        // Scrollable but at end
+        _isScrolledToStart = false;
+        _isScrolledToEnd = true;
+      } else if (maxOffset > 0 && offset == 0) {
+        // Scrollable but at start
+        _isScrolledToStart = true;
+        _isScrolledToEnd = false;
+      } else {
+        // Scroll in progress/not at either end
+        _isScrolledToStart = false;
+        _isScrolledToEnd = false;
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isScrolledToStart == null && _controller.hasClients) {
+    if (_isScrolledToStart == null && _controllerIsReady) {
       final offset = _controller.offset;
       final minOffset = _controller.position.minScrollExtent;
       final maxOffset = _controller.position.maxScrollExtent;

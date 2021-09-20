@@ -1,3 +1,9 @@
+## [2.0.1] - 20.09.2021.
+
+* Fixed an issue caused by usage of controller without proper content dimensions ([#15][i15]))
+
+[i15]: https://github.com/mponkin/fading_edge_scrollview/issues/15 
+
 ## [2.0.0] - 13.03.2021.
 
 * Added support for null-safety

@@ -16,11 +16,6 @@ View passed as child **MUST** have `controller` set. If you want this controller
 
 See documentation and example folder for more information
 
-## Flutter web support problems
-
-Unfortunately this lib has problems working with flutter web. It does not have any platform related code, however it uses `ShaderMask`. `ShaderMask` support for web was recently added to flutter dev channel, and it works not as well as I expect it to.
-I will get back to this question when `ShaderMask` for web will work in stable channel.
-
 ## Demo
 
 Click to see on Youtube:  
