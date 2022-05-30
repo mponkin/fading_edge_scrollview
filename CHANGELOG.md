@@ -1,6 +1,12 @@
+## [3.0.0] - 30.05.2022.
+
+* Flutter 3.0 compatibility (issue [#16][i16], thanks to MarcelGarus)
+
+[i16]: https://github.com/mponkin/fading_edge_scrollview/issues/16
+
 ## [2.0.1] - 20.09.2021.
 
-* Fixed an issue caused by usage of controller without proper content dimensions ([#15][i15]))
+* Fixed an issue caused by usage of controller without proper content dimensions ([#15][i15])
 
 [i15]: https://github.com/mponkin/fading_edge_scrollview/issues/15 
 
