@@ -291,7 +291,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
 
   @override
   Widget build(BuildContext context) {
-    if (widget.startOverride) _isScrolledToStart = true;
+    if (widget.startOverride) _isScrolledToStart = false;
     if (widget.endOverride) _isScrolledToEnd = false;
 
     if (_isScrolledToStart == null && _controllerIsReady) {
@@ -342,7 +342,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
         (isStartEnabled ? Colors.transparent : Colors.white),
         Colors.white,
         Colors.white,
-        (isEndEnabled ? Colors.transparent : Colors.red)
+        (isEndEnabled ? Colors.transparent : Colors.white)
       ];
 }
 
