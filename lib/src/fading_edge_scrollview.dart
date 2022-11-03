@@ -264,35 +264,13 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
     super.didChangeMetrics();
     setState(() {
       // Add the shading or remove it when the screen resize (web/desktop) or mobile is rotated
-      if (!_controllerIsReady) {
-        return;
-      }
-      final offset = _controller.offset;
-      final maxOffset = _controller.position.maxScrollExtent;
-      if (maxOffset == 0 && offset == 0) {
-        // Not scrollable
-        _isScrolledToStart = true;
-        _isScrolledToEnd = true;
-      } else if (maxOffset == offset) {
-        // Scrollable but at end
-        _isScrolledToStart = false;
-        _isScrolledToEnd = true;
-      } else if (maxOffset > 0 && offset == 0) {
-        // Scrollable but at start
-        _isScrolledToStart = true;
-        _isScrolledToEnd = false;
-      } else {
-        // Scroll in progress/not at either end
-        _isScrolledToStart = false;
-        _isScrolledToEnd = false;
-      }
+      didChange();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.startOverride) _isScrolledToStart = false;
-    if (widget.endOverride) _isScrolledToEnd = false;
+    didChange();
 
     if (_isScrolledToStart == null && _controllerIsReady) {
       final offset = _controller.offset;
@@ -344,6 +322,31 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
         Colors.white,
         (isEndEnabled ? Colors.transparent : Colors.white)
       ];
+
+  void didChange() {
+    if (!_controllerIsReady) {
+      return;
+    }
+    final offset = _controller.offset;
+    final maxOffset = _controller.position.maxScrollExtent;
+    if (maxOffset == 0 && offset == 0) {
+      // Not scrollable
+      _isScrolledToStart = true;
+      _isScrolledToEnd = true;
+    } else if (maxOffset == offset) {
+      // Scrollable but at end
+      _isScrolledToStart = false;
+      _isScrolledToEnd = true;
+    } else if (maxOffset > 0 && offset == 0) {
+      // Scrollable but at start
+      _isScrolledToStart = true;
+      _isScrolledToEnd = false;
+    } else {
+      // Scroll in progress/not at either end
+      _isScrolledToStart = false;
+      _isScrolledToEnd = false;
+    }
+  }
 }
 
 extension _Let<T> on T {
