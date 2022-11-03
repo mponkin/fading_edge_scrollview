@@ -35,8 +35,7 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// set to true if you want scrollController passed to widget to be disposed when widget's state is disposed
   final bool shouldDisposeScrollController;
 
-  final startOverride;
-  final endOverride;
+  final int scrollViewSize;
 
   const FadingEdgeScrollView._internal(
       {Key? key,
@@ -47,8 +46,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       required this.gradientFractionOnStart,
       required this.gradientFractionOnEnd,
       required this.shouldDisposeScrollController,
-      required this.startOverride,
-      required this.endOverride})
+      required this.scrollViewSize})
       : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
         assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
         super(key: key);
@@ -61,8 +59,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       double gradientFractionOnStart = 0.1,
       double gradientFractionOnEnd = 0.1,
       bool shouldDisposeScrollController = false,
-      bool startOverride = false,
-      bool endOverride = false}) {
+      int scrollViewSize = 0}) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -77,8 +74,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
-      startOverride: startOverride,
-      endOverride: endOverride,
+      scrollViewSize: scrollViewSize,
     );
   }
 
@@ -90,8 +86,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       double gradientFractionOnStart = 0.1,
       double gradientFractionOnEnd = 0.1,
       bool shouldDisposeScrollController = false,
-      bool startOverride = false,
-      bool endOverride = false}) {
+      int scrollViewSize = 0}) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -106,8 +101,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
-      startOverride: startOverride,
-      endOverride: endOverride,
+      scrollViewSize: scrollViewSize,
     );
   }
 
@@ -119,8 +113,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       double gradientFractionOnStart = 0.1,
       double gradientFractionOnEnd = 0.1,
       bool shouldDisposeScrollController = false,
-      bool startOverride = false,
-      bool endOverride = false}) {
+      int scrollViewSize = 0}) {
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
@@ -130,8 +123,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
-      startOverride: startOverride,
-      endOverride: endOverride,
+      scrollViewSize: scrollViewSize,
     );
   }
 
@@ -143,8 +135,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       double gradientFractionOnStart = 0.1,
       double gradientFractionOnEnd = 0.1,
       bool shouldDisposeScrollController = false,
-      bool startOverride = false,
-      bool endOverride = false}) {
+      int scrollViewSize = 0}) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -159,8 +150,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
-      startOverride: startOverride,
-      endOverride: endOverride,
+      scrollViewSize: scrollViewSize,
     );
   }
 
@@ -172,8 +162,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       double gradientFractionOnStart = 0.1,
       double gradientFractionOnEnd = 0.1,
       bool shouldDisposeScrollController = false,
-      bool startOverride = false,
-      bool endOverride = false}) {
+      int scrollViewSize = 0}) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -188,8 +177,7 @@ class FadingEdgeScrollView extends StatefulWidget {
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
       shouldDisposeScrollController: shouldDisposeScrollController,
-      startOverride: startOverride,
-      endOverride: endOverride,
+      scrollViewSize: scrollViewSize,
     );
   }
 
@@ -201,6 +189,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
   late ScrollController _controller;
   bool? _isScrolledToStart;
   bool? _isScrolledToEnd;
+  int lastScrollViewSize = 0;
 
   @override
   void initState() {
@@ -248,8 +237,8 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
     final minOffset = _controller.position.minScrollExtent;
     final maxOffset = _controller.position.maxScrollExtent;
 
-    final isScrolledToEnd = offset >= maxOffset || widget.endOverride;
-    final isScrolledToStart = offset <= minOffset || widget.startOverride;
+    final isScrolledToEnd = offset >= maxOffset;
+    final isScrolledToStart = offset <= minOffset;
 
     if (isScrolledToEnd != _isScrolledToEnd || isScrolledToStart != _isScrolledToStart) {
       setState(() {
@@ -270,7 +259,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
 
   @override
   Widget build(BuildContext context) {
-    didChange();
+    if (widget.scrollViewSize != lastScrollViewSize) didChange();
 
     if (_isScrolledToStart == null && _controllerIsReady) {
       final offset = _controller.offset;
