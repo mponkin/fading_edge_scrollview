@@ -261,7 +261,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView> with Widget
   Widget build(BuildContext context) {
     if (widget.scrollViewList != null && widget.scrollViewList!.length != lastScrollViewListLength) {
       lastScrollViewListLength = widget.scrollViewList!.length;
-      didChange();
+      Future.delayed(Duration.zero, didChange); // delay so list can build
     }
 
     if (_isScrolledToStart == null && _controllerIsReady) {
