@@ -2,9 +2,11 @@ import 'package:example/lipsum.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,17 +14,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: ExamplesList(),
+      home: const ExamplesList(),
     );
   }
 }
 
 class ExamplesList extends StatelessWidget {
+  const ExamplesList({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('FadingEdgeScrollView examples'),
+        title: const Text('FadingEdgeScrollView examples'),
       ),
       body: ListView(
         children: <Widget>[
@@ -32,11 +36,11 @@ class ExamplesList extends StatelessWidget {
           ),
           NavigatorButton(
             text: 'PageView (LTR)',
-            builder: (_) => PageViewScreen(textDirection: TextDirection.ltr),
+            builder: (_) => const PageViewScreen(textDirection: TextDirection.ltr),
           ),
           NavigatorButton(
             text: 'PageView (RTL)',
-            builder: (_) => PageViewScreen(textDirection: TextDirection.rtl),
+            builder: (_) => const PageViewScreen(textDirection: TextDirection.rtl),
           ),
           NavigatorButton(
             text: 'Long text',
@@ -60,10 +64,10 @@ class NavigatorButton extends StatelessWidget {
   final String text;
   final WidgetBuilder builder;
 
-  NavigatorButton({
+  const NavigatorButton({Key? key,
     required this.text,
     required this.builder,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +83,13 @@ class NavigatorButton extends StatelessWidget {
 class ListViewScreen extends StatelessWidget {
   final _controller = ScrollController();
 
+  ListViewScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example with ListView'),
+        title: const Text('Example with ListView'),
       ),
       body: Container(
         color: Colors.greenAccent,
@@ -92,7 +98,7 @@ class ListViewScreen extends StatelessWidget {
             controller: _controller,
             itemBuilder: (context, index) => ListTile(
                 title: Text('Item #$index'),
-                leading: CircleAvatar(
+                leading: const CircleAvatar(
                   backgroundImage: NetworkImage(
                       'https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg'),
                 )),
@@ -107,30 +113,30 @@ class ListViewScreen extends StatelessWidget {
 class PageViewScreen extends StatelessWidget {
   final TextDirection textDirection;
 
-  const PageViewScreen({
+  const PageViewScreen({Key? key,
     required this.textDirection,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example with PageView'),
+        title: const Text('Example with PageView'),
       ),
       body: Directionality(
         textDirection: textDirection,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: FadingEdgeScrollView.fromPageView(
+            gradientFractionOnStart: 0.1,
+            gradientFractionOnEnd: 0.1,
             child: PageView(
-              children: <Widget>[
+              children: const <Widget>[
                 Card(color: Colors.red),
                 Card(color: Colors.green),
                 Card(color: Colors.blue),
               ],
             ),
-            gradientFractionOnStart: 0.1,
-            gradientFractionOnEnd: 0.1,
           ),
         ),
       ),
@@ -141,16 +147,18 @@ class PageViewScreen extends StatelessWidget {
 class LongTextScreen extends StatelessWidget {
   final controller = ScrollController();
 
+  LongTextScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example with long text'),
+        title: const Text('Example with long text'),
       ),
       body: FadingEdgeScrollView.fromSingleChildScrollView(
         child: SingleChildScrollView(
           controller: controller,
-          child: Padding(padding: EdgeInsets.all(5), child: Text(lipsumText)),
+          child: const Padding(padding: EdgeInsets.all(5), child: Text(lipsumText)),
         ),
       ),
     );
@@ -160,11 +168,13 @@ class LongTextScreen extends StatelessWidget {
 class CitiesListView extends StatelessWidget {
   final _scrollController = ScrollController();
 
+  CitiesListView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example with cities images'),
+        title: const Text('Example with cities images'),
       ),
       body: Stack(
         children: <Widget>[
@@ -174,7 +184,7 @@ class CitiesListView extends StatelessWidget {
             height: MediaQuery.of(context).size.height,
           ),
           Center(
-            child: Container(
+            child: SizedBox(
               height: 400,
               child: FadingEdgeScrollView.fromScrollView(
                 child: ListView(
@@ -186,9 +196,9 @@ class CitiesListView extends StatelessWidget {
                     'tokyo',
                   ]
                       .map((city) => Padding(
-                            padding: EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(12),
                             child: ClipRRect(
-                              borderRadius: new BorderRadius.circular(20.0),
+                              borderRadius: BorderRadius.circular(20.0),
                               child: Image.asset('assets/$city.jpeg'),
                             ),
                           ))
@@ -206,11 +216,13 @@ class CitiesListView extends StatelessWidget {
 class ListWheelScrollViewScreen extends StatelessWidget {
   final _controller = ScrollController();
 
+  ListWheelScrollViewScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Example with ListWheelScrollView"),
+        title: const Text("Example with ListWheelScrollView"),
       ),
       body: Container(
         color: Colors.greenAccent,
@@ -224,7 +236,7 @@ class ListWheelScrollViewScreen extends StatelessWidget {
             children: lipsumText.split(" ").sublist(0, 20).map((e) {
               return ListTile(
                   title: Text("Item #$e"),
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundImage: NetworkImage(
                         "https://images.freeimages.com/images/large-previews/848/a-cat-1313470.jpg"),
                   ));
