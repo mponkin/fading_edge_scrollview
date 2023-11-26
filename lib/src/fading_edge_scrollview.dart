@@ -32,37 +32,26 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// 1 means gradients on start half of widget fully covers it
   final double gradientFractionOnEnd;
 
-  /// set to true if you want scrollController passed to widget to be disposed when widget's state is disposed
-  final bool shouldDisposeScrollController;
-
-  /// The color the gradient will fade to at the start and end of the scroll view.
-  /// Defaults to white.
-  final Color gradientColor;
-
-  const FadingEdgeScrollView._internal(
-      {Key? key,
-      required this.child,
-      required this.scrollController,
-      required this.reverse,
-      required this.scrollDirection,
-      required this.gradientFractionOnStart,
-      required this.gradientFractionOnEnd,
-      required this.shouldDisposeScrollController,
-      this.gradientColor = Colors.white})
-      : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
-        assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
-        super(key: key);
+  const FadingEdgeScrollView._internal({
+    super.key,
+    required this.child,
+    required this.scrollController,
+    required this.reverse,
+    required this.scrollDirection,
+    required this.gradientFractionOnStart,
+    required this.gradientFractionOnEnd,
+  })  : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
+        assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1);
 
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
-  factory FadingEdgeScrollView.fromScrollView({
-    Key? key,
-    required ScrollView child,
-    double gradientFractionOnStart = 0.1,
-    double gradientFractionOnEnd = 0.1,
-    bool shouldDisposeScrollController = false,
-    Color gradientColor = Colors.white
-  }) {
+  factory FadingEdgeScrollView.fromScrollView(
+      {Key? key,
+      required ScrollView child,
+      double gradientFractionOnStart = 0.1,
+      double gradientFractionOnEnd = 0.1,
+      bool shouldDisposeScrollController = false,
+      Color gradientColor = Colors.white}) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -76,8 +65,6 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
-      shouldDisposeScrollController: shouldDisposeScrollController,
-      gradientColor: gradientColor,
     );
   }
 
@@ -103,8 +90,6 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
-      shouldDisposeScrollController: shouldDisposeScrollController,
-      gradientColor: gradientColor,
     );
   }
 
@@ -125,8 +110,6 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
-      shouldDisposeScrollController: shouldDisposeScrollController,
-      gradientColor: gradientColor,
     );
   }
 
@@ -152,8 +135,6 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
-      shouldDisposeScrollController: shouldDisposeScrollController,
-      gradientColor: gradientColor,
     );
   }
 
@@ -179,8 +160,6 @@ class FadingEdgeScrollView extends StatefulWidget {
       reverse: false,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
-      shouldDisposeScrollController: shouldDisposeScrollController,
-      gradientColor: gradientColor,
     );
   }
 
@@ -211,9 +190,6 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     _controller.removeListener(_shallGradientBeShown);
-    if (widget.shouldDisposeScrollController) {
-      _controller.dispose();
-    }
   }
 
   @override
@@ -225,21 +201,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
 
   @override
   Widget build(BuildContext context) => ShaderMask(
-        shaderCallback: (bounds) => LinearGradient(
-          begin: _gradientStart,
-          end: _gradientEnd,
-          stops: [
-            0,
-            widget.gradientFractionOnStart * 0.5,
-            1 - widget.gradientFractionOnEnd * 0.5,
-            1,
-          ],
-          colors: _getColors(
-              widget.gradientFractionOnStart > 0 &&
-                  _scrollState.isShowGradientAtStart,
-              widget.gradientFractionOnEnd > 0 &&
-                  _scrollState.isShowGradientAtEnd),
-        ).createShader(
+        shaderCallback: (bounds) => _createShaderGradient().createShader(
           bounds.shift(Offset(-bounds.left, -bounds.top)),
           textDirection: Directionality.of(context),
         ),
@@ -255,6 +217,22 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
           },
         ),
         blendMode: BlendMode.dstIn,
+      );
+
+  Gradient _createShaderGradient() => LinearGradient(
+        begin: _gradientStart,
+        end: _gradientEnd,
+        stops: [
+          0,
+          widget.gradientFractionOnStart * 0.5,
+          1 - widget.gradientFractionOnEnd * 0.5,
+          1,
+        ],
+        colors: _getColors(
+            widget.gradientFractionOnStart > 0 &&
+                _scrollState.isShowGradientAtStart,
+            widget.gradientFractionOnEnd > 0 &&
+                _scrollState.isShowGradientAtEnd),
       );
 
   AlignmentGeometry get _gradientStart =>
@@ -280,10 +258,10 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       : AlignmentDirectional.centerEnd;
 
   List<Color> _getColors(bool showGradientAtStart, bool showGradientAtEnd) => [
-        (showGradientAtStart ? Colors.transparent : widget.gradientColor),
-        widget.gradientColor,
-        widget.gradientColor,
-        (showGradientAtEnd ? Colors.transparent : widget.gradientColor)
+        (showGradientAtStart ? Colors.transparent : Colors.white),
+        Colors.white,
+        Colors.white,
+        (showGradientAtEnd ? Colors.transparent : Colors.white)
       ];
 
   void _shallGradientBeShown() {
