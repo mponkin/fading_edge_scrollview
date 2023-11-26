@@ -177,7 +177,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
   void initState() {
     super.initState();
     _controller = widget.scrollController;
-    _controller.addListener(_shallGradientBeShown);
+    _controller.addListener(_updateScrollState);
 
     WidgetsBinding.instance.addObserver(this);
   }
@@ -189,14 +189,14 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-    _controller.removeListener(_shallGradientBeShown);
+    _controller.removeListener(_updateScrollState);
   }
 
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     // Add the shading or remove it when the screen resize (web/desktop) or mobile is rotated
-    _shallGradientBeShown();
+    _updateScrollState();
   }
 
   @override
@@ -211,7 +211,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
         child: NotificationListener<ScrollMetricsNotification>(
           child: widget.child,
           onNotification: (_) {
-            _shallGradientBeShown();
+            _updateScrollState();
             // Enable notification to still bubble up.
             return false;
           },
@@ -264,7 +264,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
         (showGradientAtEnd ? Colors.transparent : Colors.white)
       ];
 
-  void _shallGradientBeShown() {
+  void _updateScrollState() {
     if (!_controllerIsReady) {
       return;
     }
