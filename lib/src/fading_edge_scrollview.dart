@@ -170,7 +170,7 @@ class FadingEdgeScrollView extends StatefulWidget {
 class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
   late ScrollController _controller;
-  ScrollState _scrollState = ScrollState.NOT_SCROLLABLE;
+  _ScrollState _scrollState = _ScrollState.NOT_SCROLLABLE;
   int lastScrollViewListLength = 0;
 
   @override
@@ -277,10 +277,10 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     final isScrolledToStart = offset <= minOffset;
 
     final scrollState = switch ((isScrolledToStart, isScrolledToEnd)) {
-      (true, true) => ScrollState.NOT_SCROLLABLE,
-      (true, false) => ScrollState.SCROLLABLE_AT_START,
-      (false, true) => ScrollState.SCROLLABLE_AT_END,
-      (false, false) => ScrollState.SCROLLABLE_IN_THE_MIDDLE
+      (true, true) => _ScrollState.NOT_SCROLLABLE,
+      (true, false) => _ScrollState.SCROLLABLE_AT_START,
+      (false, true) => _ScrollState.SCROLLABLE_AT_END,
+      (false, false) => _ScrollState.SCROLLABLE_IN_THE_MIDDLE
     };
 
     if (_scrollState != scrollState) {
@@ -291,19 +291,17 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
   }
 }
 
-enum ScrollState {
+enum _ScrollState {
   NOT_SCROLLABLE,
   SCROLLABLE_AT_START,
   SCROLLABLE_AT_END,
-  SCROLLABLE_IN_THE_MIDDLE
-}
+  SCROLLABLE_IN_THE_MIDDLE;
 
-extension ShowGradient on ScrollState {
   bool get isShowGradientAtStart =>
-      this == ScrollState.SCROLLABLE_AT_END ||
-      this == ScrollState.SCROLLABLE_IN_THE_MIDDLE;
+      this == _ScrollState.SCROLLABLE_AT_END ||
+      this == _ScrollState.SCROLLABLE_IN_THE_MIDDLE;
 
   bool get isShowGradientAtEnd =>
-      this == ScrollState.SCROLLABLE_AT_START ||
-      this == ScrollState.SCROLLABLE_IN_THE_MIDDLE;
+      this == _ScrollState.SCROLLABLE_AT_START ||
+      this == _ScrollState.SCROLLABLE_IN_THE_MIDDLE;
 }
