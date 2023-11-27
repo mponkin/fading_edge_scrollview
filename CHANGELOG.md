@@ -1,14 +1,16 @@
+## [4.0.0] - 27.11.2023.
+
+* Removed `shouldDisposeScrollController` field
+* Fixed fading effect not appearing on child rebuilds (issue [#19][i19], thanks to CoolDude53, felixwoestmann)
+* Fixed error when scrollController is attached to multiple views (issue [#20][i20], thanks to scris)
+
 ## [3.0.0] - 30.05.2022.
 
 * Flutter 3.0 compatibility (issue [#16][i16], thanks to ruslic19)
 
-[i16]: https://github.com/mponkin/fading_edge_scrollview/issues/16
-
 ## [2.0.1] - 20.09.2021.
 
 * Fixed an issue caused by usage of controller without proper content dimensions ([#15][i15])
-
-[i15]: https://github.com/mponkin/fading_edge_scrollview/issues/15 
 
 ## [2.0.0] - 13.03.2021.
 
@@ -47,3 +49,8 @@
 ## [1.0.0] - 20.07.2019.
 
 * Initial publication
+
+[i15]: https://github.com/mponkin/fading_edge_scrollview/issues/15
+[i16]: https://github.com/mponkin/fading_edge_scrollview/issues/16
+[i19]: https://github.com/mponkin/fading_edge_scrollview/issues/19
+[i20]: https://github.com/mponkin/fading_edge_scrollview/issues/20

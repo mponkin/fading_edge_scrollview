@@ -8,13 +8,18 @@ Create FadingEdgeScrollView by calling one of constructors depending on your scr
 Unfortunately scrollable view don't share same interface so there are separate constructors for:
 * ScrollView (most scrollable views inherit from this class) `FadingEdgeScrollView.fromScrollView`
 * SingleChildScrollView `FadingEdgeScrollView.fromSingleChildScrollView`
-* PageView`FadingEdgeScrollView.fromPageView`
-* AnimatedList`FadingEdgeScrollView.fromAnimatedList`
-* ListWheelScrollView`FadingEdgeScrollView.fromListWheelScrollView`
+* PageView `FadingEdgeScrollView.fromPageView`
+* AnimatedList `FadingEdgeScrollView.fromAnimatedList`
+* ListWheelScrollView `FadingEdgeScrollView.fromListWheelScrollView`
 
-View passed as child **MUST** have `controller` set. If you want this controller to be disposed when FadingEdgeScrollView is disposed you can pass `shouldDisposeScrollController` flag set as true to widget constructor.
+View passed as child **MUST** have `controller` set. 
 
 See documentation and example folder for more information
+
+## Breaking change in version 4.0.0
+
+Field `shouldDisposeScrollController` was removed. I was not realizing how widgets should work when I added it.
+If you were using it - move `scrollController` creation and disposal to some `StatefulWidget`.
 
 ## Demo
 
