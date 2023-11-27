@@ -58,12 +58,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
     return FadingEdgeScrollView._internal(
       key: key,
-      child: child,
       scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      child: child,
     );
   }
 
@@ -82,12 +82,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
     return FadingEdgeScrollView._internal(
       key: key,
-      child: child,
       scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      child: child,
     );
   }
 
@@ -101,12 +101,12 @@ class FadingEdgeScrollView extends StatefulWidget {
   }) {
     return FadingEdgeScrollView._internal(
       key: key,
-      child: child,
       scrollController: child.controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      child: child,
     );
   }
 
@@ -125,12 +125,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
     return FadingEdgeScrollView._internal(
       key: key,
-      child: child,
       scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      child: child,
     );
   }
 
@@ -149,23 +149,23 @@ class FadingEdgeScrollView extends StatefulWidget {
 
     return FadingEdgeScrollView._internal(
       key: key,
-      child: child,
       scrollController: controller,
       scrollDirection: Axis.vertical,
       reverse: false,
       gradientFractionOnStart: gradientFractionOnStart,
       gradientFractionOnEnd: gradientFractionOnEnd,
+      child: child,
     );
   }
 
   @override
-  _FadingEdgeScrollViewState createState() => _FadingEdgeScrollViewState();
+  FadingEdgeScrollViewState createState() => FadingEdgeScrollViewState();
 }
 
-class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
+class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
   late ScrollController _controller;
-  _ScrollState _scrollState = _ScrollState.NOT_SCROLLABLE;
+  _ScrollState _scrollState = _ScrollState.notScrollable;
   int lastScrollViewListLength = 0;
 
   @override
@@ -200,8 +200,9 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
           bounds.shift(Offset(-bounds.left, -bounds.top)),
           textDirection: Directionality.of(context),
         ),
+        blendMode: BlendMode.dstIn,
         // Catching ScrollMetricsNotifications from the Scrollable child.
-        // This way we get notified if the size of the underlying list chnages.
+        // This way we get notified if the size of the underlying list changes.
         // We then re-evaluate if Gradient should be shown.
         child: NotificationListener<ScrollMetricsNotification>(
           child: widget.child,
@@ -211,7 +212,6 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
             return false;
           },
         ),
-        blendMode: BlendMode.dstIn,
       );
 
   Gradient _createShaderGradient() => LinearGradient(
@@ -272,10 +272,10 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     final isScrolledToStart = offset <= minOffset;
 
     final scrollState = switch ((isScrolledToStart, isScrolledToEnd)) {
-      (true, true) => _ScrollState.NOT_SCROLLABLE,
-      (true, false) => _ScrollState.SCROLLABLE_AT_START,
-      (false, true) => _ScrollState.SCROLLABLE_AT_END,
-      (false, false) => _ScrollState.SCROLLABLE_IN_THE_MIDDLE
+      (true, true) => _ScrollState.notScrollable,
+      (true, false) => _ScrollState.scrollableAtStart,
+      (false, true) => _ScrollState.scrollableAtEnd,
+      (false, false) => _ScrollState.scrollableInTheMiddle
     };
 
     if (_scrollState != scrollState) {
@@ -287,16 +287,16 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
 }
 
 enum _ScrollState {
-  NOT_SCROLLABLE,
-  SCROLLABLE_AT_START,
-  SCROLLABLE_AT_END,
-  SCROLLABLE_IN_THE_MIDDLE;
+  notScrollable,
+  scrollableAtStart,
+  scrollableAtEnd,
+  scrollableInTheMiddle;
 
   bool get isShowGradientAtStart =>
-      this == _ScrollState.SCROLLABLE_AT_END ||
-      this == _ScrollState.SCROLLABLE_IN_THE_MIDDLE;
+      this == _ScrollState.scrollableAtEnd ||
+      this == _ScrollState.scrollableInTheMiddle;
 
   bool get isShowGradientAtEnd =>
-      this == _ScrollState.SCROLLABLE_AT_START ||
-      this == _ScrollState.SCROLLABLE_IN_THE_MIDDLE;
+      this == _ScrollState.scrollableAtStart ||
+      this == _ScrollState.scrollableInTheMiddle;
 }
