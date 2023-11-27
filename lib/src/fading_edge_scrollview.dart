@@ -45,13 +45,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
-  factory FadingEdgeScrollView.fromScrollView(
-      {Key? key,
-      required ScrollView child,
-      double gradientFractionOnStart = 0.1,
-      double gradientFractionOnEnd = 0.1,
-      bool shouldDisposeScrollController = false,
-      Color gradientColor = Colors.white}) {
+  factory FadingEdgeScrollView.fromScrollView({
+    Key? key,
+    required ScrollView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -70,13 +69,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
   /// Constructor for creating [FadingEdgeScrollView] with [SingleChildScrollView] as child
   /// child must have [SingleChildScrollView.controller] set
-  factory FadingEdgeScrollView.fromSingleChildScrollView(
-      {Key? key,
-      required SingleChildScrollView child,
-      double gradientFractionOnStart = 0.1,
-      double gradientFractionOnEnd = 0.1,
-      bool shouldDisposeScrollController = false,
-      Color gradientColor = Colors.white}) {
+  factory FadingEdgeScrollView.fromSingleChildScrollView({
+    Key? key,
+    required SingleChildScrollView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -95,13 +93,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
   /// Constructor for creating [FadingEdgeScrollView] with [PageView] as child
   /// child must have [PageView.controller] set
-  factory FadingEdgeScrollView.fromPageView(
-      {Key? key,
-      required PageView child,
-      double gradientFractionOnStart = 0.1,
-      double gradientFractionOnEnd = 0.1,
-      bool shouldDisposeScrollController = false,
-      Color gradientColor = Colors.white}) {
+  factory FadingEdgeScrollView.fromPageView({
+    Key? key,
+    required PageView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
     return FadingEdgeScrollView._internal(
       key: key,
       child: child,
@@ -115,13 +112,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
   /// Constructor for creating [FadingEdgeScrollView] with [AnimatedList] as child
   /// child must have [AnimatedList.controller] set
-  factory FadingEdgeScrollView.fromAnimatedList(
-      {Key? key,
-      required AnimatedList child,
-      double gradientFractionOnStart = 0.1,
-      double gradientFractionOnEnd = 0.1,
-      bool shouldDisposeScrollController = false,
-      Color gradientColor = Colors.white}) {
+  factory FadingEdgeScrollView.fromAnimatedList({
+    Key? key,
+    required AnimatedList child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
@@ -140,13 +136,12 @@ class FadingEdgeScrollView extends StatefulWidget {
 
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
-  factory FadingEdgeScrollView.fromListWheelScrollView(
-      {Key? key,
-      required ListWheelScrollView child,
-      double gradientFractionOnStart = 0.1,
-      double gradientFractionOnEnd = 0.1,
-      bool shouldDisposeScrollController = false,
-      Color gradientColor = Colors.white}) {
+  factory FadingEdgeScrollView.fromListWheelScrollView({
+    Key? key,
+    required ListWheelScrollView child,
+    double gradientFractionOnStart = 0.1,
+    double gradientFractionOnEnd = 0.1,
+  }) {
     final controller = child.controller;
     if (controller == null) {
       throw Exception("Child must have controller set");
