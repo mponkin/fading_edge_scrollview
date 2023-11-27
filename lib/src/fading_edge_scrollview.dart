@@ -204,7 +204,7 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
   }
 
   bool get _controllerIsReady =>
-      _controller.hasClients && _controller.position.hasContentDimensions;
+      _controller.hasClients && _controller.positions.last.hasContentDimensions;
 
   @override
   void dispose() {
@@ -291,9 +291,9 @@ class _FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       return;
     }
 
-    final offset = _controller.offset;
-    final minOffset = _controller.position.minScrollExtent;
-    final maxOffset = _controller.position.maxScrollExtent;
+    final offset = _controller.positions.last.pixels;
+    final minOffset = _controller.positions.last.minScrollExtent;
+    final maxOffset = _controller.positions.last.maxScrollExtent;
 
     final isScrolledToEnd = offset >= maxOffset;
     final isScrolledToStart = offset <= minOffset;
