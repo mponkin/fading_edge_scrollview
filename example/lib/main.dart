@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:example/lipsum.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +7,7 @@ import 'package:flutter/material.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
 }
 
 class ExamplesList extends StatelessWidget {
-  const ExamplesList({Key? key}) : super(key: key);
+  const ExamplesList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,27 +34,29 @@ class ExamplesList extends StatelessWidget {
         children: <Widget>[
           NavigatorButton(
             text: 'ListView',
-            builder: (_) => ListViewScreen(),
+            builder: (_) => const ListViewScreen(),
           ),
           NavigatorButton(
             text: 'PageView (LTR)',
-            builder: (_) => const PageViewScreen(textDirection: TextDirection.ltr),
+            builder: (_) =>
+                const PageViewScreen(textDirection: TextDirection.ltr),
           ),
           NavigatorButton(
             text: 'PageView (RTL)',
-            builder: (_) => const PageViewScreen(textDirection: TextDirection.rtl),
+            builder: (_) =>
+                const PageViewScreen(textDirection: TextDirection.rtl),
           ),
           NavigatorButton(
             text: 'Long text',
-            builder: (_) => LongTextScreen(),
+            builder: (_) => const LongTextScreen(),
           ),
           NavigatorButton(
             text: 'Cities images',
-            builder: (_) => CitiesListView(),
+            builder: (_) => const CitiesListView(),
           ),
           NavigatorButton(
             text: "ListWheelScrollView",
-            builder: (_) => ListWheelScrollViewScreen(),
+            builder: (_) => const ListWheelScrollViewScreen(),
           ),
         ],
       ),
@@ -64,10 +68,11 @@ class NavigatorButton extends StatelessWidget {
   final String text;
   final WidgetBuilder builder;
 
-  const NavigatorButton({Key? key,
+  const NavigatorButton({
+    super.key,
     required this.text,
     required this.builder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +85,21 @@ class NavigatorButton extends StatelessWidget {
   }
 }
 
-class ListViewScreen extends StatelessWidget {
+class ListViewScreen extends StatefulWidget {
+  const ListViewScreen({super.key});
+
+  @override
+  State<ListViewScreen> createState() => _ListViewScreenState();
+}
+
+class _ListViewScreenState extends State<ListViewScreen> {
   final _controller = ScrollController();
 
-  ListViewScreen({Key? key}) : super(key: key);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,9 +129,10 @@ class ListViewScreen extends StatelessWidget {
 class PageViewScreen extends StatelessWidget {
   final TextDirection textDirection;
 
-  const PageViewScreen({Key? key,
+  const PageViewScreen({
+    super.key,
     required this.textDirection,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -144,10 +161,21 @@ class PageViewScreen extends StatelessWidget {
   }
 }
 
-class LongTextScreen extends StatelessWidget {
-  final controller = ScrollController();
+class LongTextScreen extends StatefulWidget {
+  const LongTextScreen({super.key});
 
-  LongTextScreen({Key? key}) : super(key: key);
+  @override
+  State<LongTextScreen> createState() => _LongTextScreenState();
+}
+
+class _LongTextScreenState extends State<LongTextScreen> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,18 +185,30 @@ class LongTextScreen extends StatelessWidget {
       ),
       body: FadingEdgeScrollView.fromSingleChildScrollView(
         child: SingleChildScrollView(
-          controller: controller,
-          child: const Padding(padding: EdgeInsets.all(5), child: Text(lipsumText)),
+          controller: _controller,
+          child: const Padding(
+              padding: EdgeInsets.all(5), child: Text(lipsumText)),
         ),
       ),
     );
   }
 }
 
-class CitiesListView extends StatelessWidget {
-  final _scrollController = ScrollController();
+class CitiesListView extends StatefulWidget {
+  const CitiesListView({super.key});
 
-  CitiesListView({Key? key}) : super(key: key);
+  @override
+  State<CitiesListView> createState() => _CitiesListViewState();
+}
+
+class _CitiesListViewState extends State<CitiesListView> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,47 +216,67 @@ class CitiesListView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Example with cities images'),
       ),
-      body: Stack(
-        children: <Widget>[
-          Image.asset(
-            'assets/world.jpeg',
-            fit: BoxFit.fitHeight,
-            height: MediaQuery.of(context).size.height,
-          ),
-          Center(
-            child: SizedBox(
-              height: 400,
-              child: FadingEdgeScrollView.fromScrollView(
-                child: ListView(
-                  controller: _scrollController,
-                  children: [
-                    'paris',
-                    'rome',
-                    'moscow',
-                    'tokyo',
-                  ]
-                      .map((city) => Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.asset('assets/$city.jpeg'),
-                            ),
-                          ))
-                      .toList(),
+      body: LayoutBuilder(builder: (context, size) {
+        return SizedBox(
+          width: min(420.0, size.maxWidth),
+          height: min(720.0, size.maxHeight),
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/world.jpeg',
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          )
-        ],
-      ),
+              Positioned.fill(
+                top: 100,
+                bottom: 100,
+                left: 20,
+                right: 20,
+                child: FadingEdgeScrollView.fromScrollView(
+                  child: ListView(
+                    controller: _controller,
+                    children: [
+                      'paris',
+                      'rome',
+                      'moscow',
+                      'tokyo',
+                    ]
+                        .map((city) => Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: Image.asset('assets/$city.jpeg'),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 }
 
-class ListWheelScrollViewScreen extends StatelessWidget {
+class ListWheelScrollViewScreen extends StatefulWidget {
+  const ListWheelScrollViewScreen({super.key});
+
+  @override
+  State<ListWheelScrollViewScreen> createState() =>
+      _ListWheelScrollViewScreenState();
+}
+
+class _ListWheelScrollViewScreenState extends State<ListWheelScrollViewScreen> {
   final _controller = ScrollController();
 
-  ListWheelScrollViewScreen({Key? key}) : super(key: key);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
