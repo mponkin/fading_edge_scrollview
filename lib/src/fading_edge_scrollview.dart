@@ -101,7 +101,8 @@ class FadingEdgeScrollView extends StatefulWidget {
   }) {
     return FadingEdgeScrollView._internal(
       key: key,
-      scrollController: child.controller,
+      scrollController: child
+          .controller!, // ignore: unnecessary_non_null_assertion, to prepare for https://github.com/flutter/flutter/pull/141138
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
