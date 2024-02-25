@@ -99,10 +99,15 @@ class FadingEdgeScrollView extends StatefulWidget {
     double gradientFractionOnStart = 0.1,
     double gradientFractionOnEnd = 0.1,
   }) {
+    final controller = child.controller;
+    //ignore: unnecessary_null_comparison
+    if (controller == null) {
+      throw Exception("Child must have controller set");
+    }
+
     return FadingEdgeScrollView._internal(
       key: key,
-      scrollController: child
-          .controller!, // ignore: unnecessary_non_null_assertion, to prepare for https://github.com/flutter/flutter/pull/141138
+      scrollController: controller,
       scrollDirection: child.scrollDirection,
       reverse: child.reverse,
       gradientFractionOnStart: gradientFractionOnStart,
