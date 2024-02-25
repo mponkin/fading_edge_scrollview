@@ -1,6 +1,10 @@
+## [4.1.1] - 25.02.2024
+
+* Updated example to set controller to PageView
+
 ## [4.1.0] - 25.02.2024
 
-* Added check for nullable controller in consturcto for pageview 
+* Added check for nullable controller in constructor for PageView 
 
 ## [4.0.0] - 27.11.2023.
 
