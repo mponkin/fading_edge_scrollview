@@ -126,7 +126,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 }
 
-class PageViewScreen extends StatelessWidget {
+class PageViewScreen extends StatefulWidget {
   final TextDirection textDirection;
 
   const PageViewScreen({
@@ -135,19 +135,34 @@ class PageViewScreen extends StatelessWidget {
   });
 
   @override
+  State<PageViewScreen> createState() => _PageViewScreenState();
+}
+
+class _PageViewScreenState extends State<PageViewScreen> {
+
+  final _controller = PageController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Example with PageView'),
       ),
       body: Directionality(
-        textDirection: textDirection,
+        textDirection: widget.textDirection,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: FadingEdgeScrollView.fromPageView(
             gradientFractionOnStart: 0.1,
             gradientFractionOnEnd: 0.1,
             child: PageView(
+              controller: _controller,
               children: const <Widget>[
                 Card(color: Colors.red),
                 Card(color: Colors.green),
