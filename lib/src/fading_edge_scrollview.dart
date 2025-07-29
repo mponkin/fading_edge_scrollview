@@ -171,7 +171,11 @@ class FadingEdgeScrollView extends StatefulWidget {
 class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
   late ScrollController _controller;
-  _ScrollState _scrollState = _ScrollState.notScrollable;
+
+  double _minToMax = 0;
+  double _offsetFromStart = 0;
+  double _offsetFromEnd = 0;
+
   int lastScrollViewListLength = 0;
 
   @override
@@ -229,11 +233,16 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
           1 - widget.gradientFractionOnEnd * 0.5,
           1,
         ],
-        colors: _getColors(
-            widget.gradientFractionOnStart > 0 &&
-                _scrollState.isShowGradientAtStart,
-            widget.gradientFractionOnEnd > 0 &&
-                _scrollState.isShowGradientAtEnd),
+        colors: <Color>[
+            widget.gradientFractionOnStart > 0
+              ? fadeInColor(_offsetFromStart, _minToMax * widget.gradientFractionOnStart)
+              : Colors.white,
+            Colors.white,
+            Colors.white,
+            widget.gradientFractionOnEnd > 0
+              ? fadeInColor(_offsetFromEnd, _minToMax * widget.gradientFractionOnEnd)
+              : Colors.white
+            ]
       );
 
   AlignmentGeometry get _gradientStart =>
@@ -258,12 +267,16 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       ? AlignmentDirectional.centerStart
       : AlignmentDirectional.centerEnd;
 
-  List<Color> _getColors(bool showGradientAtStart, bool showGradientAtEnd) => [
-        (showGradientAtStart ? Colors.transparent : Colors.white),
-        Colors.white,
-        Colors.white,
-        (showGradientAtEnd ? Colors.transparent : Colors.white)
-      ];
+  Color fadeInColor(double offsetFromEdge, double threshold) {
+    if (offsetFromEdge <= 0) {
+      return Colors.white;
+    }
+    if (offsetFromEdge >= threshold) {
+      return Colors.transparent;
+    }
+    int alpha = 255 - (255 * offsetFromEdge / threshold).round();
+    return Color.fromARGB(alpha, 255, 255, 255);
+  }
 
   void _updateScrollState() {
     if (!_controllerIsReady) {
@@ -274,35 +287,15 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     final minOffset = _controller.positions.last.minScrollExtent;
     final maxOffset = _controller.positions.last.maxScrollExtent;
 
-    final isScrolledToEnd = offset >= maxOffset;
-    final isScrolledToStart = offset <= minOffset;
-
-    final scrollState = switch ((isScrolledToStart, isScrolledToEnd)) {
-      (true, true) => _ScrollState.notScrollable,
-      (true, false) => _ScrollState.scrollableAtStart,
-      (false, true) => _ScrollState.scrollableAtEnd,
-      (false, false) => _ScrollState.scrollableInTheMiddle
-    };
-
-    if (_scrollState != scrollState) {
+    final minToMax = maxOffset - minOffset;
+    final offsetFromStart = offset - minOffset;
+    final offsetFromEnd = maxOffset - offset;
+    if (minToMax != _minToMax || offsetFromStart != _offsetFromStart || offsetFromEnd != _offsetFromEnd) {
       setState(() {
-        _scrollState = scrollState;
+        _minToMax = minToMax;
+        _offsetFromStart = offsetFromStart;
+        _offsetFromEnd = offsetFromEnd;
       });
     }
   }
-}
-
-enum _ScrollState {
-  notScrollable,
-  scrollableAtStart,
-  scrollableAtEnd,
-  scrollableInTheMiddle;
-
-  bool get isShowGradientAtStart =>
-      this == _ScrollState.scrollableAtEnd ||
-      this == _ScrollState.scrollableInTheMiddle;
-
-  bool get isShowGradientAtEnd =>
-      this == _ScrollState.scrollableAtStart ||
-      this == _ScrollState.scrollableInTheMiddle;
 }
