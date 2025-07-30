@@ -172,7 +172,6 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
   late ScrollController _controller;
 
-  double _minToMax = 0;
   double _offsetFromStart = 0;
   double _offsetFromEnd = 0;
 
@@ -206,7 +205,11 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
 
   @override
   Widget build(BuildContext context) => ShaderMask(
-        shaderCallback: (bounds) => _createShaderGradient().createShader(
+        shaderCallback: (bounds) => _createShaderGradient(
+                widget.scrollDirection == Axis.vertical
+                    ? bounds.height
+                    : bounds.width)
+            .createShader(
           bounds.shift(Offset(-bounds.left, -bounds.top)),
           textDirection: Directionality.of(context),
         ),
@@ -224,7 +227,7 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
         ),
       );
 
-  Gradient _createShaderGradient() => LinearGradient(
+  Gradient _createShaderGradient(double size) => LinearGradient(
         begin: _gradientStart,
         end: _gradientEnd,
         stops: [
@@ -235,12 +238,12 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
         ],
         colors: <Color>[
             widget.gradientFractionOnStart > 0
-              ? fadeInColor(_offsetFromStart, _minToMax * widget.gradientFractionOnStart)
+              ? fadeInColor(_offsetFromStart, size * widget.gradientFractionOnStart)
               : Colors.white,
             Colors.white,
             Colors.white,
             widget.gradientFractionOnEnd > 0
-              ? fadeInColor(_offsetFromEnd, _minToMax * widget.gradientFractionOnEnd)
+              ? fadeInColor(_offsetFromEnd, size * widget.gradientFractionOnEnd)
               : Colors.white
             ]
       );
@@ -287,12 +290,10 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     final minOffset = _controller.positions.last.minScrollExtent;
     final maxOffset = _controller.positions.last.maxScrollExtent;
 
-    final minToMax = maxOffset - minOffset;
     final offsetFromStart = offset - minOffset;
     final offsetFromEnd = maxOffset - offset;
-    if (minToMax != _minToMax || offsetFromStart != _offsetFromStart || offsetFromEnd != _offsetFromEnd) {
+    if (offsetFromStart != _offsetFromStart || offsetFromEnd != _offsetFromEnd) {
       setState(() {
-        _minToMax = minToMax;
         _offsetFromStart = offsetFromStart;
         _offsetFromEnd = offsetFromEnd;
       });
