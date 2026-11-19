@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Flutter widget for displaying fading edge at start/end of scroll views
 class FadingEdgeScrollView extends StatefulWidget {
@@ -258,11 +258,14 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       ? AlignmentDirectional.centerStart
       : AlignmentDirectional.centerEnd;
 
+  static const _opaque = Color(0xFFFFFFFF);
+  static const _transparent = Color(0x00000000);
+
   List<Color> _getColors(bool showGradientAtStart, bool showGradientAtEnd) => [
-        (showGradientAtStart ? Colors.transparent : Colors.white),
-        Colors.white,
-        Colors.white,
-        (showGradientAtEnd ? Colors.transparent : Colors.white)
+        (showGradientAtStart ? _transparent : _opaque),
+        _opaque,
+        _opaque,
+        (showGradientAtEnd ? _transparent : _opaque)
       ];
 
   void _updateScrollState() {
