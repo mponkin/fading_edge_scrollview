@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Builds a striped list using solid colored bands (no fonts/text) so golden
 /// images render deterministically across environments.
 ListView _stripedList({
-  required ScrollController controller,
+  ScrollController? controller,
   int count = 12,
   Axis scrollDirection = Axis.vertical,
   bool reverse = false,
@@ -131,6 +131,80 @@ void main() {
       await expectLater(
         find.byType(RepaintBoundary).first,
         matchesGoldenFile('goldens/from_scroll_view_horizontal_middle.png'),
+      );
+    });
+  });
+
+  group('FadingEdgeScrollView.fromScrollable goldens', () {
+    testWidgets('vertical list at top, just scrolled, middle, and bottom',
+        (tester) async {
+      await tester.pumpWidget(
+        _goldenFrame(
+          FadingEdgeScrollView.fromScrollable(
+            child: _stripedList(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_top.png'),
+      );
+
+      // Drag 16 px (half of default 32 px extent) to show growing start fade.
+      await tester.drag(find.byType(ListView), const Offset(0, -16));
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_just_scrolled.png'),
+      );
+
+      // Drag to middle.
+      await tester.drag(find.byType(ListView), const Offset(0, -124));
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_middle.png'),
+      );
+
+      // Drag to bottom.
+      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_bottom.png'),
+      );
+    });
+
+    testWidgets('non-scrollable list that fits', (tester) async {
+      await tester.pumpWidget(
+        _goldenFrame(
+          FadingEdgeScrollView.fromScrollable(
+            child: _stripedList(count: 3),
+          ),
+        ),
+      );
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_fits.png'),
+      );
+    });
+
+    testWidgets('horizontal LTR list in middle', (tester) async {
+      await tester.pumpWidget(
+        _goldenFrame(
+          FadingEdgeScrollView.fromScrollable(
+            child: _stripedList(scrollDirection: Axis.horizontal),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.drag(find.byType(ListView), const Offset(-140, 0));
+      await tester.pump();
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/from_scrollable_horizontal_middle.png'),
       );
     });
   });

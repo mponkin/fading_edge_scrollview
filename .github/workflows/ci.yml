@@ -22,7 +22,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze package
-        run: flutter analyze --no-fatal-infos lib test
+        run: flutter analyze lib test
 
       - name: Run tests
         run: flutter test

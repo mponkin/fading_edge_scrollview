@@ -1,14 +1,25 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+
+/// How tall (or wide) each edge's fade is, in logical pixels, and which way
+/// the scroll view runs. `0` is a sharp edge.
+typedef _EdgeFades = ({AxisDirection direction, double start, double end});
 
 /// Flutter widget for displaying fading edge at start/end of scroll views
 class FadingEdgeScrollView extends StatefulWidget {
+  /// Default fade extent in logical pixels used by
+  /// [FadingEdgeScrollView.fromScrollable].
+  static const double defaultExtent = 32.0;
+
   /// child widget
   final Widget child;
 
-  /// scroll controller of child widget
+  /// scroll controller of child widget, or `null` when created with
+  /// [FadingEdgeScrollView.fromScrollable]
   ///
-  /// Look for more documentation at [ScrollView.scrollController]
-  final ScrollController scrollController;
+  /// Look for more documentation at [ScrollView.controller]
+  final ScrollController? scrollController;
 
   /// Whether the scroll view scrolls in the reading direction.
   ///
@@ -29,19 +40,96 @@ class FadingEdgeScrollView extends StatefulWidget {
   /// what part of screen on end half should be covered by fading edge gradient
   /// [gradientFractionOnEnd] must be 0 <= [gradientFractionOnEnd] <= 1
   /// 0 means no gradient,
-  /// 1 means gradients on start half of widget fully covers it
+  /// 1 means gradients on end half of widget fully covers it
   final double gradientFractionOnEnd;
+
+  /// Fixed fade size at the start edge in logical pixels, when using
+  /// [FadingEdgeScrollView.fromScrollable].
+  ///
+  /// `null` when fraction-based sizing ([gradientFractionOnStart]) is used.
+  final double? startExtent;
+
+  /// Fixed fade size at the end edge in logical pixels, when using
+  /// [FadingEdgeScrollView.fromScrollable].
+  ///
+  /// `null` when fraction-based sizing ([gradientFractionOnEnd]) is used.
+  final double? endExtent;
+
+  final bool _useNotifications;
 
   const FadingEdgeScrollView._internal({
     super.key,
     required this.child,
-    required this.scrollController,
+    required ScrollController this.scrollController,
     required this.reverse,
     required this.scrollDirection,
     required this.gradientFractionOnStart,
     required this.gradientFractionOnEnd,
   })  : assert(gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
-        assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1);
+        assert(gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
+        startExtent = null,
+        endExtent = null,
+        _useNotifications = false;
+
+  /// Constructor for creating [FadingEdgeScrollView] around any scrollable
+  /// widget without requiring a [ScrollController].
+  ///
+  /// Listens to [ScrollMetricsNotification] and [ScrollUpdateNotification]
+  /// from the direct scrollable child (`depth == 0`), automatically inferring
+  /// scroll axis, reverse order, and text direction from the scroll metrics.
+  ///
+  /// Each edge's fade grows smoothly with the scrolled distance up to
+  /// [startExtent] / [endExtent] in logical pixels (defaulting to
+  /// [defaultExtent]), or up to [gradientFractionOnStart] /
+  /// [gradientFractionOnEnd] if fraction-based sizing is provided instead.
+  /// Pass `0` for either edge to disable its fade.
+  ///
+  /// Scrolling repaints only the fade mask without rebuilding widgets.
+  const FadingEdgeScrollView.fromScrollable({
+    super.key,
+    required this.child,
+    double? startExtent,
+    double? endExtent,
+    double? gradientFractionOnStart,
+    double? gradientFractionOnEnd,
+  })  : assert(
+          startExtent == null || gradientFractionOnStart == null,
+          'Cannot specify both startExtent and gradientFractionOnStart',
+        ),
+        assert(
+          endExtent == null || gradientFractionOnEnd == null,
+          'Cannot specify both endExtent and gradientFractionOnEnd',
+        ),
+        assert(
+          startExtent == null || startExtent >= 0,
+          'startExtent must be non-negative',
+        ),
+        assert(
+          endExtent == null || endExtent >= 0,
+          'endExtent must be non-negative',
+        ),
+        assert(
+          gradientFractionOnStart == null ||
+              (gradientFractionOnStart >= 0 && gradientFractionOnStart <= 1),
+          'gradientFractionOnStart must be between 0 and 1',
+        ),
+        assert(
+          gradientFractionOnEnd == null ||
+              (gradientFractionOnEnd >= 0 && gradientFractionOnEnd <= 1),
+          'gradientFractionOnEnd must be between 0 and 1',
+        ),
+        scrollController = null,
+        reverse = false,
+        scrollDirection = Axis.vertical,
+        startExtent = gradientFractionOnStart == null
+            ? (startExtent ?? defaultExtent)
+            : null,
+        endExtent = gradientFractionOnEnd == null
+            ? (endExtent ?? defaultExtent)
+            : null,
+        gradientFractionOnStart = gradientFractionOnStart ?? 0,
+        gradientFractionOnEnd = gradientFractionOnEnd ?? 0,
+        _useNotifications = true;
 
   /// Constructor for creating [FadingEdgeScrollView] with [ScrollView] as child
   /// child must have [ScrollView.controller] set
@@ -170,27 +258,69 @@ class FadingEdgeScrollView extends StatefulWidget {
 
 class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     with WidgetsBindingObserver {
-  late ScrollController _controller;
+  ScrollController? _controller;
   _ScrollState _scrollState = _ScrollState.notScrollable;
   int lastScrollViewListLength = 0;
+
+  final ValueNotifier<_EdgeFades> _fades = ValueNotifier<_EdgeFades>(
+    (direction: AxisDirection.down, start: 0, end: 0),
+  );
+  ScrollMetrics? _lastMetrics;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.scrollController;
-    _controller.addListener(_updateScrollState);
+    if (!widget._useNotifications) {
+      _attachController(widget.scrollController!);
+    }
+  }
 
+  void _attachController(ScrollController controller) {
+    _controller = controller;
+    controller.addListener(_updateScrollState);
     WidgetsBinding.instance.addObserver(this);
   }
 
-  bool get _controllerIsReady =>
-      _controller.hasClients && _controller.positions.last.hasContentDimensions;
+  void _detachController() {
+    final controller = _controller;
+    if (controller != null) {
+      WidgetsBinding.instance.removeObserver(this);
+      controller.removeListener(_updateScrollState);
+      _controller = null;
+    }
+  }
+
+  @override
+  void didUpdateWidget(FadingEdgeScrollView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget._useNotifications != oldWidget._useNotifications) {
+      if (widget._useNotifications) {
+        _detachController();
+      } else {
+        _lastMetrics = null;
+        _attachController(widget.scrollController!);
+      }
+    } else if (!widget._useNotifications &&
+        widget.scrollController != oldWidget.scrollController) {
+      _detachController();
+      _attachController(widget.scrollController!);
+    } else if (widget._useNotifications && _lastMetrics != null) {
+      _applyMetrics(_lastMetrics!);
+    }
+  }
+
+  bool get _controllerIsReady {
+    final controller = _controller;
+    return controller != null &&
+        controller.hasClients &&
+        controller.positions.last.hasContentDimensions;
+  }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _detachController();
+    _fades.dispose();
     super.dispose();
-    _controller.removeListener(_updateScrollState);
   }
 
   @override
@@ -200,25 +330,72 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
     _updateScrollState();
   }
 
+  bool _onScrollMetrics(ScrollMetrics metrics, int depth) {
+    if (depth == 0) {
+      _lastMetrics = metrics;
+      _applyMetrics(metrics);
+    }
+    return false;
+  }
+
+  void _applyMetrics(ScrollMetrics metrics) {
+    final maxStart = widget.startExtent ??
+        (metrics.viewportDimension * widget.gradientFractionOnStart * 0.5);
+    final maxEnd = widget.endExtent ??
+        (metrics.viewportDimension * widget.gradientFractionOnEnd * 0.5);
+    _fades.value = (
+      direction: metrics.axisDirection,
+      start: _fadeAmount(metrics.extentBefore, maxStart),
+      end: _fadeAmount(metrics.extentAfter, maxEnd),
+    );
+  }
+
+  double _fadeAmount(double scrolledPast, double maxExtent) {
+    if (scrolledPast <= 0 ||
+        !scrolledPast.isFinite ||
+        maxExtent <= 0 ||
+        !maxExtent.isFinite) {
+      return 0;
+    }
+    return clampDouble(scrolledPast, 0, maxExtent);
+  }
+
   @override
-  Widget build(BuildContext context) => ShaderMask(
-        shaderCallback: (bounds) => _createShaderGradient().createShader(
-          bounds.shift(Offset(-bounds.left, -bounds.top)),
-          textDirection: Directionality.of(context),
-        ),
-        blendMode: BlendMode.dstIn,
-        // Catching ScrollMetricsNotifications from the Scrollable child.
-        // This way we get notified if the size of the underlying list changes.
-        // We then re-evaluate if Gradient should be shown.
-        child: NotificationListener<ScrollMetricsNotification>(
-          child: widget.child,
-          onNotification: (_) {
-            _updateScrollState();
-            // Enable notification to still bubble up.
-            return false;
-          },
+  Widget build(BuildContext context) {
+    if (widget._useNotifications) {
+      return NotificationListener<ScrollMetricsNotification>(
+        onNotification: (notification) =>
+            _onScrollMetrics(notification.metrics, notification.depth),
+        child: NotificationListener<ScrollUpdateNotification>(
+          onNotification: (notification) =>
+              _onScrollMetrics(notification.metrics, notification.depth),
+          child: _FadeMask(
+            fades: _fades,
+            child: widget.child,
+          ),
         ),
       );
+    }
+
+    return ShaderMask(
+      shaderCallback: (bounds) => _createShaderGradient().createShader(
+        bounds.shift(Offset(-bounds.left, -bounds.top)),
+        textDirection: Directionality.of(context),
+      ),
+      blendMode: BlendMode.dstIn,
+      // Catching ScrollMetricsNotifications from the Scrollable child.
+      // This way we get notified if the size of the underlying list changes.
+      // We then re-evaluate if Gradient should be shown.
+      child: NotificationListener<ScrollMetricsNotification>(
+        child: widget.child,
+        onNotification: (_) {
+          _updateScrollState();
+          // Enable notification to still bubble up.
+          return false;
+        },
+      ),
+    );
+  }
 
   Gradient _createShaderGradient() => LinearGradient(
         begin: _gradientStart,
@@ -273,9 +450,10 @@ class FadingEdgeScrollViewState extends State<FadingEdgeScrollView>
       return;
     }
 
-    final offset = _controller.positions.last.pixels;
-    final minOffset = _controller.positions.last.minScrollExtent;
-    final maxOffset = _controller.positions.last.maxScrollExtent;
+    final position = _controller!.positions.last;
+    final offset = position.pixels;
+    final minOffset = position.minScrollExtent;
+    final maxOffset = position.maxScrollExtent;
 
     final isScrolledToEnd = offset >= maxOffset;
     final isScrolledToStart = offset <= minOffset;
@@ -308,4 +486,105 @@ enum _ScrollState {
   bool get isShowGradientAtEnd =>
       this == _ScrollState.scrollableAtStart ||
       this == _ScrollState.scrollableInTheMiddle;
+}
+
+class _FadeMask extends SingleChildRenderObjectWidget {
+  const _FadeMask({
+    required this.fades,
+    super.child,
+  });
+
+  final ValueListenable<_EdgeFades> fades;
+
+  @override
+  _RenderFadeMask createRenderObject(BuildContext context) =>
+      _RenderFadeMask(fades);
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderFadeMask renderObject) {
+    renderObject.fades = fades;
+  }
+}
+
+/// Paints its child through a gradient mask that fades it out at the edges
+/// described by [fades], repainting directly without widget rebuilds.
+class _RenderFadeMask extends RenderProxyBox {
+  _RenderFadeMask(ValueListenable<_EdgeFades> fades) : _fades = fades;
+
+  ValueListenable<_EdgeFades> _fades;
+
+  set fades(ValueListenable<_EdgeFades> value) {
+    if (_fades == value) return;
+    if (attached) {
+      _fades.removeListener(markNeedsPaint);
+    }
+    _fades = value;
+    if (attached) {
+      _fades.addListener(markNeedsPaint);
+    }
+    markNeedsPaint();
+  }
+
+  @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+    _fades.addListener(markNeedsPaint);
+  }
+
+  @override
+  void detach() {
+    _fades.removeListener(markNeedsPaint);
+    super.detach();
+  }
+
+  @override
+  bool get alwaysNeedsCompositing => child != null;
+
+  @override
+  ShaderMaskLayer? get layer => super.layer as ShaderMaskLayer?;
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    if (child == null) return;
+    final value = _fades.value;
+    if ((value.start == 0 && value.end == 0) || size.isEmpty) {
+      layer = null;
+      context.paintChild(child!, offset);
+      return;
+    }
+    layer = (layer ?? ShaderMaskLayer())
+      ..shader = _gradient(value).createShader(Offset.zero & size)
+      ..maskRect = offset & size
+      ..blendMode = BlendMode.dstIn;
+    context.pushLayer(layer!, super.paint, offset);
+  }
+
+  LinearGradient _gradient(_EdgeFades value) {
+    final length = axisDirectionToAxis(value.direction) == Axis.vertical
+        ? size.height
+        : size.width;
+    // Cap each fade at half the viewport so start and end stops never cross.
+    double stop(double fade) =>
+        length == 0 ? 0.5 : clampDouble(fade / length, 0, 0.5);
+
+    const opaque = Color(0xFF000000);
+    const clear = Color(0x00000000);
+    final (begin, end) = switch (value.direction) {
+      AxisDirection.down => (Alignment.topCenter, Alignment.bottomCenter),
+      AxisDirection.up => (Alignment.bottomCenter, Alignment.topCenter),
+      AxisDirection.right => (Alignment.centerLeft, Alignment.centerRight),
+      AxisDirection.left => (Alignment.centerRight, Alignment.centerLeft),
+    };
+    return LinearGradient(
+      begin: begin,
+      end: end,
+      colors: [
+        if (value.start > 0) clear else opaque,
+        opaque,
+        opaque,
+        if (value.end > 0) clear else opaque,
+      ],
+      stops: [0, stop(value.start), 1 - stop(value.end), 1],
+    );
+  }
 }
