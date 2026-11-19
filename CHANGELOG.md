@@ -1,3 +1,9 @@
+## [Unreleased]
+
+* Added controller-free `FadingEdgeScrollView.fromScrollable` constructor that works with any scrollable widget, smoothly grows edge fades in logical pixels (`startExtent` / `endExtent`, defaulting to `32.0`, or optional `gradientFractionOnStart` / `gradientFractionOnEnd`), ignores nested scroll views, and repaints without rebuilding widgets
+* Replaced `package:flutter/material.dart` import with `package:flutter/widgets.dart`
+* Added unit, widget, and golden tests along with GitHub Actions CI
+
 ## [4.1.1] - 25.02.2024
 
 * Updated example to set controller to PageView

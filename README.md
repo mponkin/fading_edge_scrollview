@@ -4,15 +4,35 @@ Package providing FadingEdgeScrollView which allows you to build scrollable view
 
 ## Usage
 
-Create FadingEdgeScrollView by calling one of constructors depending on your scroll view class.
-Unfortunately scrollable view don't share same interface so there are separate constructors for:
+### Controller-free (recommended)
+
+Use `FadingEdgeScrollView.fromScrollable` to wrap any scrollable widget (`ListView`, `GridView`, `CustomScrollView`, `SingleChildScrollView`, `PageView`, etc.) without creating or managing a `ScrollController`:
+
+```dart
+FadingEdgeScrollView.fromScrollable(
+  child: ListView.builder(
+    itemCount: 30,
+    itemBuilder: (context, index) => Text('Item #$index'),
+  ),
+)
+```
+
+`fromScrollable`:
+* Automatically detects scroll axis, `reverse`, and `TextDirection` (LTR/RTL) from scroll notifications (`depth == 0`, ignoring nested scroll views).
+* Smoothly grows each edge's fade height as you scroll, up to `startExtent` / `endExtent` in logical pixels (defaults to `32.0`, pass `0` to disable an edge).
+* Also supports fraction-based sizing via `gradientFractionOnStart` / `gradientFractionOnEnd` when pixel extents are not specified.
+* Repaints only the fade mask while scrolling without rebuilding widgets, and skips the mask layer entirely when nothing is faded.
+
+### With an explicit `ScrollController`
+
+You can also use the type-specific factory constructors with an explicit controller:
 * ScrollView (most scrollable views inherit from this class) `FadingEdgeScrollView.fromScrollView`
 * SingleChildScrollView `FadingEdgeScrollView.fromSingleChildScrollView`
 * PageView `FadingEdgeScrollView.fromPageView`
 * AnimatedList `FadingEdgeScrollView.fromAnimatedList`
 * ListWheelScrollView `FadingEdgeScrollView.fromListWheelScrollView`
 
-View passed as child **MUST** have `controller` set. 
+For these constructors, the view passed as child **MUST** have `controller` set.
 
 See documentation and example folder for more information
 
